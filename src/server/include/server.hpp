@@ -7,7 +7,7 @@
 #include <map>
 #include <mutex>
 
-#include "tmchat.h"
+#include "../../common/tmchat.h"
 #include "i_database.hpp"
 
 TMCHAT_NAMESPACE_BEGIN
@@ -34,6 +34,9 @@ private:
 
     void
     on_receive(int fd, const ::std::string& msg);
+
+    void
+    on_disconnect(int fd);
 
     PREP_NODISCARD static
     bool

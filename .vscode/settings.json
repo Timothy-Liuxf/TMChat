@@ -56,6 +56,10 @@
         "string_view": "cpp",
         "optional": "cpp",
         "*.ipp": "cpp",
-        "*.i": "c"
+        "*.i": "c",
+        "ranges": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "span": "cpp"
     }
 }

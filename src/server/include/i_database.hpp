@@ -6,7 +6,7 @@
 #include <exception>
 #include <prep/include/prep.h>
 
-#include "tmchat.h"
+#include "../../common/tmchat.h"
 
 TMCHAT_NAMESPACE_BEGIN
 
@@ -21,7 +21,7 @@ public:
     }
 };
 
-template <typename Data, typename Id = ::std::uint64_t>
+template <typename Data, typename Id = default_id_type>
 class i_database
 {
 public:

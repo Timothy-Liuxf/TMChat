@@ -53,7 +53,7 @@ public:
     void
     on_disconnect(::std::function<void(int)> disconnect_func)
     {
-        this->m_on_connect.subscript(::std::move(disconnect_func));
+        this->m_on_disconnect.subscript(::std::move(disconnect_func));
     }
 
     void

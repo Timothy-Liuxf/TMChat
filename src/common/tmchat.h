@@ -6,10 +6,21 @@
 #   define TMCHAT_NAMESPACE_BEGIN namespace tmchat {
 #   define TMCHAT_NAMESPACE_END }
 
+#   include <cstdint>
+
+namespace tmchat
+{
+    using default_id_type = ::std::uint64_t;
+}
+
 #else // #ifdef __cplusplus
 
 #   define TMCHAT_NAMESPACE_BEGIN
 #   define TMCHAT_NAMESPACE_END
+
+#   include <stdint.h>
+
+typedef uint64_t default_id_type;
 
 #endif
 

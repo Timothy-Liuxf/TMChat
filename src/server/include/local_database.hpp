@@ -2,7 +2,7 @@
 #define TMCHAT_LOCAL_DATABASE_HPP__
 
 #include "i_database.hpp"
-#include "tmchat.h"
+#include "../../common/tmchat.h"
 #include <string>
 #include <map>
 #include <mutex>
@@ -42,12 +42,12 @@ public:
         {
             if (data_tip.first != cnt)
             {
-                this->m_database.emplace(cnt, data);
-                return cnt;
+                break;
             }
             ++cnt;
         }
-        throw database_full();
+        this->m_database.emplace(cnt, data);
+        return cnt;
     }
 
     PREP_NODISCARD

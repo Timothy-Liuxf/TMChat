@@ -166,7 +166,7 @@ server_stream::receive_from_client(int client_fd, ::std::weak_ptr<::prep::concur
                         ::std::unique_lock<::std::mutex> lock(this->m_client_fds_lock);
                         this->m_client_fds.erase(client_fd);
                     }
-                    this->m_msg_q.emplace(msg_type::log, ::std::pair<int, ::std::string>(client_fd, "A client closed the connection!"));
+                    this->m_msg_q.emplace(msg_type::disconnect, ::std::pair<int, ::std::string>(client_fd, "A client closed the connection!"));
                     break;
                 }
                 else

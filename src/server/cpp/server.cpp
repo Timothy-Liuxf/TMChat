@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <sstream>
-#include <protocol/protocol.hpp>
 #include <type_traits>
+#include "../../common/protocol.hpp"
 
 using ::std::cout;
 using ::std::cerr;
@@ -21,10 +21,11 @@ server::server(create_database_t create_database) : m_database_ptr(create_databa
             cout << "Successfully connected!" << endl;
         }
     );
-    this->m_communicator.add_log([] (const ::std::string& str) { cout << str << endl; });
+    this->m_communicator.add_log([](const ::std::string& str) { cout << str << endl; });
 
-    this->m_communicator.on_connect([] (int fd) { cout << "A client: " << fd << " connected!" << endl; });
-    this->m_communicator.on_reveive([this] (int fd, const ::std::string& msg) { this->on_receive(fd, msg); });
+    this->m_communicator.on_connect([](int fd) { cout << "A client: " << fd << " connected!" << endl; });
+    this->m_communicator.on_reveive([this](int fd, const ::std::string& msg) { this->on_receive(fd, msg); });
+    this->m_communicator.on_disconnect([this](int fd) { this->on_disconnect(fd); });
 
     cout << "Please input server port: " << std::flush;
     ::std::string port;
@@ -38,6 +39,16 @@ bool
 server::correct_passwd(const ::std::string& passwd, const data_type& data)
 {
     return passwd == data.passwd;
+}
+
+void
+server::on_disconnect(int fd)
+{
+    {
+        ::std::unique_lock<::std::mutex> lock(this->m_fd_to_id_mtx);
+        this->m_fd_to_id.erase(fd);
+    }
+    cout << "A client: " << fd << " disconnected!" << endl;
 }
 
 void
@@ -63,15 +74,14 @@ server::on_receive(int fd, const ::std::string& msg)
         {
             throw invalid_message();
         }
-        using protocol::msg_type;
-        using protocol::msg_type_to_integer;
+        using msg_type = common::protocol::msg_type;
         switch (static_cast<msg_type>(msg_type_val))
         {
         case msg_type::register_account:
         {
             ::std::string passwd, name;
             ::std::getline(sin, passwd);
-            ::std::getline(sin, name);
+            name = msg.substr(sin.tellg());
             if (!sin) throw invalid_message();
             try
             {
@@ -81,12 +91,12 @@ server::on_receive(int fd, const ::std::string& msg)
                     this->m_fd_to_id[fd] = id;
                 }
                 this->m_communicator.send_to_one_client(fd,
-                    ::std::to_string(msg_type_to_integer(msg_type::register_success)) + '\n' +
+                    ::std::to_string(common::protocol::msg_type_to_integer(msg_type::register_success)) + '\n' +
                     ::std::to_string(id) + '\n');
             }
             catch(...)
             {
-                this->m_communicator.send_to_one_client(fd, ::std::to_string(msg_type_to_integer(msg_type::register_failed)) + '\n');
+                this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::register_failed)) + '\n');
             }
             break;
         }
@@ -95,9 +105,7 @@ server::on_receive(int fd, const ::std::string& msg)
             id_type id;
             sin >> id;
             while (sin.get() != '\n');
-            ::std::string passwd;
-            ::std::getline(sin, passwd);
-            if (!sin) throw invalid_message();
+            ::std::string passwd = msg.substr(sin.tellg());
             try
             {
                 data_type data;
@@ -110,22 +118,22 @@ server::on_receive(int fd, const ::std::string& msg)
                             this->m_fd_to_id[fd] = id;
                         }
                         this->m_communicator.send_to_one_client(fd, 
-                            ::std::to_string(msg_type_to_integer(msg_type::login_failed)) + '\n' +
-                            data.name + '\n');
+                            ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_seccess)) + '\n' +
+                            data.name);
                     }
                     else
                     {
-                        this->m_communicator.send_to_one_client(fd, ::std::to_string(msg_type_to_integer(msg_type::login_failed)) + '\n');
+                        this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_failed)) + '\n');
                     }
                 }
                 else
                 {
-                    this->m_communicator.send_to_one_client(fd, ::std::to_string(msg_type_to_integer(msg_type::login_failed)) + '\n');
+                    this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_failed)) + '\n');
                 }
             }
             catch (...)
             {
-                this->m_communicator.send_to_one_client(fd, ::std::to_string(msg_type_to_integer(msg_type::login_failed)) + '\n');
+                this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_failed)) + '\n');
             }
             break;
         }
@@ -134,12 +142,28 @@ server::on_receive(int fd, const ::std::string& msg)
             try
             {
                 auto msg_to_sent = msg.substr(sin.tellg());
-                this->m_communicator.send_to_all_clients(msg_to_sent);
-                this->m_communicator.send_to_one_client(fd, ::std::to_string(msg_type_to_integer(msg_type::chat_seccess)) + '\n' + msg_to_sent);
+                data_type tmp_data;
+                {
+                    ::std::unique_lock<::std::mutex> lock(this->m_fd_to_id_mtx);
+                    auto itr = this->m_fd_to_id.find(fd);
+                    if (itr == this->m_fd_to_id.end()) throw invalid_message();
+                    for (auto&& fd_to_id : this->m_fd_to_id)
+                    {
+                        if (fd_to_id.first != fd
+                         && this->m_database_ptr->get_data(itr->second, tmp_data))
+                        {
+                            this->m_communicator.send_to_one_client(fd_to_id.first,
+                                ::std::to_string(common::protocol::msg_type_to_integer(msg_type::chat)) + '\n' +
+                                tmp_data.name + '\n' + msg_to_sent);
+                        }
+                            
+                    }
+                }
+                this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::chat_seccess)) + '\n' + msg_to_sent);
             }
             catch (...)
             {
-                this->m_communicator.send_to_one_client(fd, ::std::to_string(msg_type_to_integer(msg_type::chat_failed)) + '\n' + msg.substr(sin.tellg()));
+                this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::chat_failed)) + '\n' + msg.substr(sin.tellg()));
             }
             break;
         }
