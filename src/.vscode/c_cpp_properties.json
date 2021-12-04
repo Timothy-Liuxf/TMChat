@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "linux",
+            "includePath": [
+                "."
+            ]
+        }
+    ]
+}
