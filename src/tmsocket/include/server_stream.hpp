@@ -49,7 +49,6 @@ private:
 
     void receive_from_client(int client_fd) noexcept;
     void accept_clients() noexcept;
-    void pick_msg();
     ::std::unique_ptr<::std::thread> m_thrd_accept_clients;
 };
 

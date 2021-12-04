@@ -279,6 +279,19 @@ server_stream::send_to_all_clients(const ::std::string& msg)
 
 // client_stream
 
+client_stream::~client_stream() noexcept
+{
+    try
+    {
+        this->end_communication();
+    }
+    catch(...)
+    {
+        // No operation
+    }
+    
+}
+
 void
 client_stream::receive_from_server() noexcept
 {

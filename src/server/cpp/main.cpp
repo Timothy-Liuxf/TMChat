@@ -1,0 +1,72 @@
+#include <tmsocket/include/server_stream.hpp>
+#include <iostream>
+#include <string>
+#include <thread>
+#include <vector>
+#include <mutex>
+#include <condition_variable>
+
+int main(void)
+{
+    std::cout << "Please input server port: " << std::flush;
+    std::string port;
+    std::cin >> port;
+    tmsocket::server_stream ss;
+    std::vector<int> client_fds;
+    std::mutex mtx;
+    ss.add_log([](const std::string& str) { std::cout << str << std::endl; });
+    ss.on_listen([] { std::cout << "Server begins to listen!" << std::endl; });
+    ss.on_connect
+    (
+        [&](int fd)
+        {
+            std::unique_lock<std::mutex> lock(mtx);
+            client_fds.emplace_back(fd);
+            std::cout << "A client successfully connected!" << std::endl;
+        }
+    );
+    ss.on_reveive([](const std::string& str) { std::cout << str << std::endl; });
+
+    bool finished_listen = false;
+    std::mutex finished_listen_mtx;
+    std::condition_variable cond;
+
+    ss.on_listen([&]
+    {
+        std::unique_lock<std::mutex> lock(finished_listen_mtx);
+        finished_listen = true;
+        cond.notify_all();
+    });
+
+    std::thread thr
+    {
+        [&]
+        {
+
+            {
+                std::unique_lock<std::mutex> lock(finished_listen_mtx);
+                cond.wait(lock, [&] { return finished_listen; });
+            }
+
+            std::cout << "Begin send" << std::endl;
+
+            for (int i = 0; i < 10; ++i)
+            {
+                ss.send_to_all_clients("All clients!\n");
+                std::cout << "Send for once" << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
+
+            ss.end_communication();
+        }
+    };
+
+    std::cout << "Before listen" << std::endl;
+
+    ss.listen("", port);
+
+    std::cout << "End listen" << std::endl;
+
+    thr.join();
+    return 0;
+}

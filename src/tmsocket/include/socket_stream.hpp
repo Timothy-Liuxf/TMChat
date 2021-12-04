@@ -40,7 +40,7 @@ public:
     }
 
     virtual
-    ~socket_stream() noexcept = 0;
+    ~socket_stream() noexcept {}
 
     PREP_NODISCARD bool
     is_connected() const
@@ -55,7 +55,7 @@ public:
     }
 
     void
-    add_log(::std::function<void(const ::std::string)> log_func)
+    add_log(::std::function<void(const ::std::string&)> log_func)
     {
         m_logger.subscript(::std::move(log_func));
     }

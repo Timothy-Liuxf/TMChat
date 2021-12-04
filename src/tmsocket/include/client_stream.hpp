@@ -4,6 +4,7 @@
 #include <prep/include/concurrent_queue.hpp>
 #include <tmsocket/include/socket_stream.hpp>
 #include <mutex>
+#include <thread>
 #include <memory>
 
 TMSOCKET_NAMESPACE_BEGIN
@@ -36,9 +37,6 @@ private:
 
     void
     receive_from_server() noexcept;
-
-    void
-    pick_msg();
 };
 
 TMSOCKET_NAMESPACE_END
