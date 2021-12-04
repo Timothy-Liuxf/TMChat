@@ -1,5 +1,5 @@
-#ifndef SOCKET_STREAM_HPP__
-#define SOCKET_STREAM_HPP__
+#ifndef TMSOCKET_SOCKET_STREAM_HPP__
+#define TMSOCKET_SOCKET_STREAM_HPP__
 
 #include <prep/include/event.hpp>
 #include <prep/include/concurrent_queue.hpp>
@@ -8,10 +8,9 @@
 #include <tmsocket/include/netexcept.hpp>
 #include <string>
 #include <atomic>
+#include <functional>
 #include <utility>
 #include <memory>
-#include <unordered_set>
-#include <thread>
 
 TMSOCKET_NAMESPACE_BEGIN
 
@@ -28,23 +27,32 @@ public:
         finish = 4
     };
 
-    socket_stream(int buf_size = 128);
+    socket_stream(int buf_size = 128)
+                : m_fd(-1),
+                  m_is_finished(false),
+                  m_is_connected(false),
+                  m_buf_size(buf_size) {}
 
-    PREP_NODISCARD
-    int
+    PREP_NODISCARD int
     buf_size() const noexcept
-    { return this->m_buf_size; }
+    {
+        return this->m_buf_size;
+    }
 
     virtual
     ~socket_stream() noexcept = 0;
 
-    PREP_NODISCARD
-    bool
-    is_connected() const;
+    PREP_NODISCARD bool
+    is_connected() const
+    {
+        return this->m_is_connected;
+    }
 
-    PREP_NODISCARD
-    bool
-    is_finished() const;
+    PREP_NODISCARD bool
+    is_finished() const
+    {
+        return this->m_is_finished;
+    }
 
     void
     add_log(::std::function<void(const ::std::string)> log_func)
@@ -71,52 +79,31 @@ protected:
     ::prep::concurrent::concurrent_queue<::std::pair<msg_type, ::std::string>> m_msg_q;
     ::prep::concurrent::event<const ::std::string&> m_logger;
     ::prep::concurrent::event<const ::std::string&> m_on_receive;
-};
-
-class server_stream final : public socket_stream
-{
-public:
-
-    virtual ~server_stream() noexcept override;
-
-    void
-    listen(const ::std::string& host, const ::std::string& port);
 
     virtual void
-    end_communication() override;
-
-    void
-    on_listen(::std::function<void(void)> connect_func)
+    pick_msg()
     {
-        this->m_on_listen.subscript(::std::move(connect_func));
+        while (true)
+        {
+            auto msg = this->m_msg_q.wait_for_pop();
+            switch (msg.first)
+            {
+            case msg_type::finish:
+                return;
+            case msg_type::log:
+            case msg_type::error:
+                this->m_logger.invoke(msg.second);
+                break;
+            case msg_type::critical_error:
+                throw ::std::runtime_error(::std::string(::std::move(msg.second)));
+                break;
+            case msg_type::msg:
+                this->m_on_receive.invoke(msg.second);
+                break;
+            }
+        }
     }
-
-    void
-    on_connect(::std::function<void(int)> connect_func)
-    {
-        this->m_on_connect.subscript(::std::move(connect_func));
-    }
-
-    void
-    send_to_one_client(int client_fd, const ::std::string& msg);
-
-    void
-    send_to_all_clients(const ::std::string& msg);
-
-private:
-
-    ::prep::concurrent::event<> m_on_listen;
-    ::prep::concurrent::event<int> m_on_connect;
-    ::std::mutex m_connect_mtx;
-    ::std::unordered_set<int> m_client_fds;
-    ::std::mutex m_client_fds_lock;
-
-    void receive_from_client(int client_fd) noexcept;
-    void accept_clients() noexcept;
-    void pick_msg();
-    ::std::unique_ptr<::std::thread> m_thrd_accept_clients;
 };
-
 
 class fail_to_init_socket : public netexcept
 {

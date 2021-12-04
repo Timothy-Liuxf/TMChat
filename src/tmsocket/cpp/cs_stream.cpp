@@ -1,4 +1,5 @@
-#include "../include/socket_stream.hpp"
+#include "../include/server_stream.hpp"
+#include "../include/client_stream.hpp"
 
 #include <prep/include/os_net.h>
 #include <cstring>
@@ -6,7 +7,7 @@
 
 TMSOCKET_NAMESPACE_BEGIN
 
-socket_stream::socket_stream(int buf_size) : m_fd(-1), m_is_finished(false), m_is_connected(false), m_buf_size(buf_size) {}
+// server_stream
 
 server_stream::~server_stream() noexcept
 {
@@ -27,29 +28,14 @@ server_stream::end_communication()
     bool org_val = m_is_finished.exchange(true);
     if (!org_val)
     {
+        this->m_msg_q.emplace(msg_type::finish, "");
         ::close(this->m_fd);
         this->m_fd = -1;
-        this->m_msg_q.emplace(msg_type::finish, "");
         this->m_thrd_accept_clients->join();
     }
 }
 
-PREP_NODISCARD
-bool
-socket_stream::is_connected() const
-{
-    return this->m_is_connected;
-}
-
-PREP_NODISCARD
-bool
-socket_stream::is_finished() const
-{
-    return this->m_is_finished;
-}
-
-PREP_NODISCARD
-static int
+PREP_NODISCARD static int
 connect_impl(const ::std::string& host, const ::std::string& port, socket_stream* stm, int (*connect_func)(int, const sockaddr*, socklen_t))
 {
     if (stm->is_finished())
@@ -206,30 +192,6 @@ server_stream::accept_clients() noexcept
 }
 
 void
-server_stream::pick_msg()
-{
-    while (true)
-    {
-        auto msg = this->m_msg_q.wait_for_pop();
-        switch (msg.first)
-        {
-        case msg_type::finish:
-            return;
-        case msg_type::log:
-        case msg_type::error:
-            this->m_logger.invoke(msg.second);
-            break;
-        case msg_type::critical_error:
-            throw ::std::runtime_error(::std::string(::std::move(msg.second)));
-            break;
-        case msg_type::msg:
-            this->m_on_receive.invoke(msg.second);
-            break;
-        }
-    }
-}
-
-void
 server_stream::listen(const ::std::string& host, const ::std::string& port)
 {
     {
@@ -261,7 +223,8 @@ server_stream::listen(const ::std::string& host, const ::std::string& port)
     this->pick_msg();
 }
 
-static void send_msg(int fd, const ::std::string& msg, socket_stream* stm)
+static void
+send_msg(int fd, const ::std::string& msg, socket_stream* stm)
 {
     ::std::size_t has_sent = 0;
     while (stm->is_finished() && has_sent < msg.length())
@@ -311,6 +274,71 @@ server_stream::send_to_all_clients(const ::std::string& msg)
         {
             // No operation
         }
+    }
+}
+
+// client_stream
+
+void
+client_stream::receive_from_server() noexcept
+{
+    try
+    {
+        char* buf = new char[this->buf_size()];
+        while (!this->is_finished())
+        {
+            int len = ::recv(this->m_fd, buf, this->buf_size(), 0);
+            if (len < 0)
+            {
+                if (!this->is_finished()) this->m_msg_q.emplace(msg_type::critical_error, "Fail to receive message!");
+            }
+            else if (len == 0)
+            {
+                this->end_communication();
+            }
+            else
+            {
+                this->m_msg_q.emplace(msg_type::msg, ::std::string(buf, len));
+            }
+        }
+        delete[] buf;
+    }
+    catch (::std::bad_alloc&)
+    {
+        this->m_msg_q.emplace(msg_type::critical_error, "Cannot allocate buffer!");
+    }
+}
+
+void
+client_stream::connect(const ::std::string& host, const ::std::string& port)
+{
+    {
+        ::std::unique_lock<::std::mutex> lock(this->m_connect_mtx);
+        this->m_fd = connect_impl(host, port, this, &::connect);
+        this->m_is_connected = true;
+    }
+    this->m_on_connect.invoke();
+
+    this->m_thrd_recv_from_server.reset(new ::std::thread(&client_stream::m_thrd_recv_from_server, this));
+    this->pick_msg();
+}
+
+void
+client_stream::send_to_server(const ::std::string& msg)
+{
+    send_msg(this->m_fd, msg, this);
+}
+
+void
+client_stream::end_communication()
+{
+    bool org_val = m_is_finished.exchange(true);
+    if (!org_val)
+    {
+        this->m_msg_q.emplace(msg_type::finish, "");
+        ::close(this->m_fd);
+        this->m_fd = -1;
+        this->m_thrd_recv_from_server->join();
     }
 }
 
