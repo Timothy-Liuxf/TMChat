@@ -389,3 +389,6 @@ FodyWeavers.xsd
 
 # VS Code C++ Config
 !.vscode/c_cpp_properties.json
+
+# Build dependent files
+*.d
