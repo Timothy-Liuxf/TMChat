@@ -86,6 +86,7 @@ protected:
         while (true)
         {
             auto msg = this->m_msg_q.wait_for_pop();
+
             switch (msg.first)
             {
             case msg_type::finish:

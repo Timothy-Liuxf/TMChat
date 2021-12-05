@@ -41,6 +41,7 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "semaphore": "cpp",
-        "cwchar": "cpp"
+        "cwchar": "cpp",
+        "iostream": "cpp"
     }
 }

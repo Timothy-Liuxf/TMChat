@@ -8,12 +8,13 @@
 
 int main(void)
 {
-    std::cout << "Please input server ip: " << std::flush;
+    std::cout << "Please input server ip (127.0.0.1 by default): " << std::flush;
     std::string host;
-    std::cin >> host;
+    std::getline(std::cin, host);
+    if (host == "") host = "127.0.0.1";
     std::cout << "Please input server port: " << std::flush;
     std::string port;
-    std::cin >> port;
+    std::getline(std::cin, port);
     tmsocket::client_stream cs;
 
 
@@ -25,6 +26,7 @@ int main(void)
             std::cout << "Successfully connected to server!" << std::endl;
         }
     );
+
     cs.on_reveive([](const std::string& str) { std::cout << str << std::endl; });
 
     bool finished_connect = false;
@@ -50,8 +52,8 @@ int main(void)
 
             for (int i = 0; i < 10; ++i)
             {
-                cs.send_to_server("All clients!\n");
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                cs.send_to_server("To server!\n");
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
 
             cs.end_communication();

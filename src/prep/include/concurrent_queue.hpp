@@ -71,7 +71,7 @@ public:
     wait_for_pop()
     {
         lock_type lock(this->m_mtx);
-        this->m_cond.wait(lock, [this] { return this->size() > 0; });
+        this->m_cond.wait(lock, [this] { return this->m_q.size() > 0; });
         value_type out = ::std::move(m_q.front());
         m_q.pop();
         return out;

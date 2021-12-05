@@ -10,7 +10,7 @@ int main(void)
 {
     std::cout << "Please input server port: " << std::flush;
     std::string port;
-    std::cin >> port;
+    std::getline(std::cin, port);
     tmsocket::server_stream ss;
     std::vector<int> client_fds;
     std::mutex mtx;
@@ -25,7 +25,7 @@ int main(void)
             std::cout << "A client successfully connected!" << std::endl;
         }
     );
-    ss.on_reveive([](const std::string& str) { std::cout << str << std::endl; });
+    ss.on_reveive([](const std::string& str) { std::cout << "Received: " << str << std::endl; });
 
     bool finished_listen = false;
     std::mutex finished_listen_mtx;
@@ -48,24 +48,17 @@ int main(void)
                 cond.wait(lock, [&] { return finished_listen; });
             }
 
-            std::cout << "Begin send" << std::endl;
-
             for (int i = 0; i < 10; ++i)
             {
                 ss.send_to_all_clients("All clients!\n");
-                std::cout << "Send for once" << std::endl;
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
 
             ss.end_communication();
         }
     };
 
-    std::cout << "Before listen" << std::endl;
-
     ss.listen("", port);
-
-    std::cout << "End listen" << std::endl;
 
     thr.join();
     return 0;

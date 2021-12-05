@@ -133,6 +133,7 @@ server_stream::receive_from_client(int client_fd) noexcept
                     this->m_client_fds.erase(client_fd);
                 }
                 this->m_msg_q.emplace(msg_type::log, "A client closed the connection!");
+                break;
             }
             else
             {
@@ -173,6 +174,11 @@ server_stream::accept_clients() noexcept
 
                     thrds.emplace_back(new ::std::thread{ &server_stream::receive_from_client, this, client_fd });
                 }
+            }
+
+            for (auto&& thrd : thrds)
+            {
+                thrd->join();
             }
         }
         catch (...)
@@ -227,7 +233,7 @@ static void
 send_msg(int fd, const ::std::string& msg, socket_stream* stm)
 {
     ::std::size_t has_sent = 0;
-    while (stm->is_finished() && has_sent < msg.length())
+    while (!stm->is_finished() && has_sent < msg.length())
     {
         int sz = send(fd, msg.c_str() + has_sent, msg.length() - has_sent, 0);
         if (sz == -1)
@@ -332,7 +338,7 @@ client_stream::connect(const ::std::string& host, const ::std::string& port)
     }
     this->m_on_connect.invoke();
 
-    this->m_thrd_recv_from_server.reset(new ::std::thread(&client_stream::m_thrd_recv_from_server, this));
+    this->m_thrd_recv_from_server.reset(new ::std::thread(&client_stream::receive_from_server, this));
     this->pick_msg();
 }
 
