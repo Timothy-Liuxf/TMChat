@@ -29,6 +29,7 @@ server_stream::end_communication()
     if (!org_val)
     {
         this->m_msg_q.emplace(msg_type::finish, "");
+        this->wait_for_finish_pick();
         ::close(this->m_fd);
         this->m_fd = -1;
         this->m_thrd_accept_clients->join();
@@ -355,6 +356,7 @@ client_stream::end_communication()
     if (!org_val)
     {
         this->m_msg_q.emplace(msg_type::finish, "");
+        this->wait_for_finish_pick();
         ::close(this->m_fd);
         this->m_fd = -1;
         this->m_thrd_recv_from_server->join();

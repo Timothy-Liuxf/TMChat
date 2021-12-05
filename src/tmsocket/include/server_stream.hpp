@@ -2,6 +2,7 @@
 #define TMSOCKET_SERVER_STREAM_HPP
 
 #include <tmsocket/include/socket_stream.hpp>
+#include <prep/include/semaphore.hpp>
 
 #include <unordered_set>
 #include <thread>

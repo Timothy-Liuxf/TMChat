@@ -1,11 +1,12 @@
 COMPILER_OPTIONS?=g++ -std=c++11 -O2 -Wall -Wpedantic -Wextra
 
 ADDITIONAL_INCLUDE=-I..
-COMPILER_ALL_OPTIONS=$(COMPILER_OPTIONS) -lpthread
+COMPILER_ALL_OPTIONS=$(COMPILER_OPTIONS)
 
 BIN_DIR=./bin
 DEPS_DIR=./deps
-RAW_OBJECTS=$(patsubst ./cpp/%.cpp,%.o,$(shell ls ./cpp/*.cpp))
+SRC_DIR=./cpp
+RAW_OBJECTS=$(patsubst $(SRC_DIR)/%.cpp,%.o,$(shell ls ./cpp/*.cpp))
 OBJECTS=$(patsubst %.o,$(BIN_DIR)/%.o,$(RAW_OBJECTS))
 DEPS=$(patsubst %.o, $(DEPS_DIR)/%.d,$(RAW_OBJECTS))
 
@@ -13,13 +14,13 @@ DEPS=$(patsubst %.o, $(DEPS_DIR)/%.d,$(RAW_OBJECTS))
 
 build: $(OBJECTS)
 
-$(DEPS): $(DEPS_DIR)/%.d: ./cpp/%.cpp | $(DEPS_DIR)
+$(DEPS): $(DEPS_DIR)/%.d: $(SRC_DIR)/%.cpp | $(DEPS_DIR)
 	$(COMPILER_ALL_OPTIONS) $(ADDITIONAL_INCLUDE) -MM $< | sed -e 1's,^,$(BIN_DIR)/,' > $@
 
 $(DEPS_DIR):
 	mkdir -p $@
 
-$(OBJECTS): $(BIN_DIR)/%.o: ./cpp/%.cpp | $(BIN_DIR)
+$(OBJECTS): $(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BIN_DIR)
 	$(COMPILER_ALL_OPTIONS) $(ADDITIONAL_INCLUDE) -o $@ -c $<
 
 $(BIN_DIR):

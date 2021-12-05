@@ -11,6 +11,8 @@
 #include <functional>
 #include <utility>
 #include <memory>
+#include <mutex>
+#include <condition_variable>
 
 TMSOCKET_NAMESPACE_BEGIN
 
@@ -80,30 +82,16 @@ protected:
     ::prep::concurrent::event<const ::std::string&> m_logger;
     ::prep::concurrent::event<const ::std::string&> m_on_receive;
 
-    virtual void
-    pick_msg()
-    {
-        while (true)
-        {
-            auto msg = this->m_msg_q.wait_for_pop();
+    void
+    pick_msg();
 
-            switch (msg.first)
-            {
-            case msg_type::finish:
-                return;
-            case msg_type::log:
-            case msg_type::error:
-                this->m_logger.invoke(msg.second);
-                break;
-            case msg_type::critical_error:
-                throw ::std::runtime_error(::std::string(::std::move(msg.second)));
-                break;
-            case msg_type::msg:
-                this->m_on_receive.invoke(msg.second);
-                break;
-            }
-        }
-    }
+    void
+    wait_for_finish_pick() const;
+
+private:
+    bool m_finish_pick = false;
+    mutable ::std::condition_variable m_finish_pick_cond;
+    mutable ::std::mutex m_finish_pick_mtx;
 };
 
 class fail_to_init_socket : public netexcept
