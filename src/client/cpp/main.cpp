@@ -53,7 +53,7 @@ int main(void)
             for (int i = 0; i < 10; ++i)
             {
                 cs.send_to_server("To server!\n");
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100000));
             }
 
             cs.end_communication();
