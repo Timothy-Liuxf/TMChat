@@ -30,7 +30,7 @@ server_stream::end_communication()
     {
         this->m_msg_q.emplace(msg_type::finish, "");
         this->wait_for_finish_pick();
-        ::close(this->m_fd);
+        ::close_socket(this->m_fd);
         this->m_fd = -1;
         this->m_thrd_accept_clients->join();
     }
@@ -88,7 +88,7 @@ connect_impl(const ::std::string& host, const ::std::string& port, socket_stream
             if (ret == 0) break;
 
             connect_errno = get_net_error();
-            ::close(fd);
+            ::close_socket(fd);
             fd = -1;
         }
     }
@@ -216,7 +216,7 @@ server_stream::listen(const ::std::string& host, const ::std::string& port)
         }
         catch(...)
         {
-            ::close(this->m_fd);
+            ::close_socket(this->m_fd);
             this->m_fd = -1;
             throw;
         }
@@ -357,7 +357,7 @@ client_stream::end_communication()
     {
         this->m_msg_q.emplace(msg_type::finish, "");
         this->wait_for_finish_pick();
-        ::close(this->m_fd);
+        ::close_socket(this->m_fd);
         this->m_fd = -1;
         this->m_thrd_recv_from_server->join();
     }

@@ -7,7 +7,8 @@
 
 #   include <WinSock2.h>
 
-#   define get_net_error() ::WSAGetLastError()
+#   define get_net_error() WSAGetLastError()
+#   define close_socket(fd) closesocket(fd)
 
 #elif defined(__linux__) || defined(__unix__)
 
@@ -15,6 +16,7 @@
 #   include <netdb.h>
 
 #   define get_net_error() (errno)
+#   define close_socket(fd) close(fd)
 
 #endif // #if defined(_WIN32)
 
