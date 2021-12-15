@@ -53,6 +53,7 @@
         "cwctype": "cpp",
         "unordered_set": "cpp",
         "streambuf": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "optional": "cpp"
     }
 }

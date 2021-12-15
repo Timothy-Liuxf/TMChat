@@ -3,6 +3,7 @@
 
 #include <tmsocket/include/socket_stream.hpp>
 #include <prep/include/semaphore.hpp>
+#include <prep/include/concurrent_list.hpp>
 
 #include <unordered_set>
 #include <thread>
@@ -48,9 +49,10 @@ private:
     ::std::unordered_set<int> m_client_fds;
     ::std::mutex m_client_fds_lock;
 
-    void receive_from_client(int client_fd) noexcept;
-    void accept_clients() noexcept;
-    ::std::unique_ptr<::std::thread> m_thrd_accept_clients;
+    void receive_from_client(int client_fd, ::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept;
+    void accept_clients(::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept;
+    ::std::shared_ptr<prep::concurrent::semaphore> m_accept_clients_sem;
+    ::prep::concurrent::concurrent_list<::std::shared_ptr<prep::concurrent::semaphore>> m_receive_from_client_sems;
 };
 
 TMSOCKET_NAMESPACE_END

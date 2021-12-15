@@ -25,7 +25,6 @@ public:
     using value_type        = typename list_type::value_type;
     using reference         = typename list_type::reference;
     using const_reference   = typename list_type::const_reference;
-    using container_type    = typename list_type::container_type;
 
     concurrent_list() = default;
     concurrent_list(const concurrent_list&) = delete;
