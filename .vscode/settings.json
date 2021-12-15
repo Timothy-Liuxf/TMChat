@@ -42,6 +42,17 @@
         "typeinfo": "cpp",
         "semaphore": "cpp",
         "cwchar": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "unordered_map": "cpp",
+        "iterator": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "cmath": "cpp",
+        "cstdio": "cpp",
+        "cstring": "cpp",
+        "cwctype": "cpp",
+        "unordered_set": "cpp",
+        "streambuf": "cpp",
+        "string_view": "cpp"
     }
 }

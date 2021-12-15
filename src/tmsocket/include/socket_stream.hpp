@@ -146,4 +146,4 @@ private:
 
 TMSOCKET_NAMESPACE_END
 
-#endif
+#endif // #ifndef TMSOCKET_SOCKET_STREAM_HPP__

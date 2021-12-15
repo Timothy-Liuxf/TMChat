@@ -11,19 +11,19 @@
 
 PREP_CONCURRENT_NAMESPACE_BEGIN
 
-template <typename Elem>
+template <typename Elem, typename Container = ::std::deque<Elem>>
 class concurrent_queue
 {
 private:
-    using queue_type = ::std::queue<Elem>;
-    using lock_type = ::std::unique_lock<::std::mutex>;
+    using queue_type        = ::std::queue<Elem, Container>;
+    using lock_type         = ::std::unique_lock<::std::mutex>;
 
 public:
-    using size_type = typename queue_type::size_type;
-    using value_type = typename queue_type::value_type;
-    using reference = typename queue_type::reference;
-    using const_reference = typename queue_type::const_reference;
-    using container_type = typename queue_type::container_type;
+    using size_type         = typename queue_type::size_type;
+    using value_type        = typename queue_type::value_type;
+    using reference         = typename queue_type::reference;
+    using const_reference   = typename queue_type::const_reference;
+    using container_type    = typename queue_type::container_type;
 
     concurrent_queue() = default;
     concurrent_queue(const concurrent_queue&) = delete;
@@ -44,6 +44,13 @@ public:
     {
         lock_type lock(this->m_mtx);
         return m_q.size();
+    }
+
+    PREP_NODISCARD
+    bool
+    empty() const
+    {
+        return this->size() == 0;
     }
 
     template <typename... Ts>
@@ -85,4 +92,4 @@ private:
 
 PREP_CONCURRENT_NAMESPACE_END
 
-#endif
+#endif // #ifndef PREP_CONCURRENT_QUEUE_HPP__
