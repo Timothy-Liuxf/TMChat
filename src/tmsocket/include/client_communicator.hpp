@@ -35,7 +35,7 @@ public:
     connect(const ::std::string& host, const ::std::string& port);
 
     void
-    on_connect(::std::function<void(void)> listen_func);
+    on_connect(::std::function<void(void)> connect_func);
 
     void
     send_to_server(const ::std::string& msg);

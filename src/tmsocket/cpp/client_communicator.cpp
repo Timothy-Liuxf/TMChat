@@ -51,9 +51,9 @@ client_communicator::connect(const ::std::string& host, const ::std::string& por
 }
 
 void
-client_communicator::on_connect(::std::function<void(void)> listen_func)
+client_communicator::on_connect(::std::function<void(void)> connect_func)
 {
-    this->m_ctm.on_connect(::std::move(listen_func));
+    this->m_ctm.on_connect(::std::move(connect_func));
 }
 
 void

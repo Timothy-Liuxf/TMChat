@@ -6,6 +6,7 @@
 #include <tmsocket/include/defs.hpp>
 #include <exception>
 #include <memory>
+#include <string>
 
 TMSOCKET_NAMESPACE_BEGIN
 
@@ -33,6 +34,83 @@ class invalid_input : public netexcept
 {
 public:
     invalid_input(const char* msg, prep::errno_type no) : netexcept(msg, no) {}
+};
+
+class fail_to_init_socket : public netexcept
+{
+public:
+    fail_to_init_socket(const char* msg, prep::errno_type no) : netexcept(msg, no) {}
+};
+
+class fail_to_connect : public netexcept
+{
+public:
+    fail_to_connect(const char* msg, prep::errno_type no) : netexcept(msg, no) {}
+};
+
+class fail_to_listen : public netexcept
+{
+public:
+    fail_to_listen(const char* msg, prep::errno_type no) : netexcept(msg, no) {}
+};
+
+class fail_to_send : public netexcept
+{
+public:
+    fail_to_send(const char* msg, prep::errno_type no) : netexcept(msg, no) {}
+};
+
+
+class client_not_exist : public tmsocket_exception
+{
+public:
+    client_not_exist(int fd) : m_fd(fd) {}
+
+    PREP_NODISCARD
+    virtual const char*
+    what() const noexcept override
+    {
+        return "The client specified doesn't exists!";
+    }
+
+    PREP_NODISCARD
+    int
+    get_fd() const noexcept
+    {
+        return this->m_fd;
+    }
+
+private:
+    int m_fd;
+};
+
+class disconnect_unexpectedly : public tmsocket_exception
+{
+public:
+    explicit disconnect_unexpectedly(const ::std::string& str) : m_str(str) {}
+    explicit disconnect_unexpectedly(::std::string&& str) noexcept : m_str(::std::move(str)) {}
+    disconnect_unexpectedly(const disconnect_unexpectedly& ex) : m_str(ex.m_str) {}
+    disconnect_unexpectedly(disconnect_unexpectedly&& ex) noexcept : m_str(::std::move(ex.m_str)) {}
+    disconnect_unexpectedly& operator=(const disconnect_unexpectedly& ex)
+    {
+        this->m_str = ex.m_str;
+        return *this;
+    }
+    disconnect_unexpectedly& operator=(disconnect_unexpectedly&& ex) noexcept
+    {
+        this->m_str = ::std::move(ex.m_str);
+        return *this;
+    }
+
+    PREP_NODISCARD
+    virtual const char*
+    what() const noexcept override
+    {
+        return m_str.c_str();
+    }
+
+private:
+    ::std::string m_str;
 };
 
 TMSOCKET_NAMESPACE_END

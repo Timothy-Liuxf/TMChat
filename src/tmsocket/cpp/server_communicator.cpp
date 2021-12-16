@@ -8,13 +8,13 @@ server_communicator::server_communicator()
 {
     this->m_stm.on_reveive
     (
-        [this] (const ::std::string& str)
+        [this] (int fd, const ::std::string& str)
         {
-            this->m_buffer.append(str);
+            this->m_buffers[fd].append(str);
             ::std::string msg;
-            while (protocol::protocol::try_decode_message(this->m_buffer, msg))
+            while (protocol::protocol::try_decode_message(this->m_buffers[fd], msg))
             {
-                this->m_on_receive.invoke(msg);
+                this->m_on_receive.invoke(fd, msg);
             }
         }
     );
@@ -39,7 +39,7 @@ server_communicator::add_log(::std::function<void(const ::std::string&)> log_fun
 }
 
 void
-server_communicator::on_reveive(::std::function<void(const ::std::string&)> func)
+server_communicator::on_reveive(::std::function<void(int, const ::std::string&)> func)
 {
     m_on_receive.subscript(::std::move(func));
 }
@@ -66,6 +66,12 @@ void
 server_communicator::on_connect(::std::function<void(int)> connect_func)
 {
     this->m_stm.on_connect(::std::move(connect_func));
+}
+
+void
+server_communicator::on_disconnect(::std::function<void(int)> disconnect_func)
+{
+    this->m_stm.on_disconnect(::std::move(disconnect_func));
 }
 
 void

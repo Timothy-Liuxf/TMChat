@@ -2,6 +2,9 @@
 #   error Please include <tmsocket/include/server_communicator.hpp> or <tmsocket/include/client_communicator.hpp> instead.
 #endif
 
+#ifndef TMSOCKET_DETAILS_PROTOCOL_IPP__
+#define TMSOCKET_DETAILS_PROTOCOL_IPP__
+
 #include <prep/include/prep.h>
 #include <cstddef>
 #include <string>
@@ -92,3 +95,5 @@ PROTOCAL_INLINE_NAMESPACE_END
 #undef PROTOCAL_INLINE_NAMESPACE_BEGIN
 
 TMSOCKET_NAMESPACE_END
+
+#endif // #ifndef TMSOCKET_DETAILS_PROTOCOL_IPP__
