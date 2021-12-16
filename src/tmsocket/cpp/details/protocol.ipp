@@ -5,6 +5,7 @@
 #include <prep/include/prep.h>
 #include <cstddef>
 #include <string>
+#include <utility>
 #include <algorithm>
 
 TMSOCKET_NAMESPACE_BEGIN
@@ -39,7 +40,8 @@ public:
             return false;
         }
 
-        auto postfix_pos = buffer.find(tmsocket_postfix, prefix_pos);
+        ::std::string org_buffer = buffer;
+        auto postfix_pos = buffer.find(tmsocket_postfix, prefix_pos + tmsocket_prefix.size());
         while (postfix_pos != ::std::string::npos)
         {
             if (buffer.substr(postfix_pos + tmsocket_postfix.size(), tmsocket_postfix.size()) == tmsocket_postfix)
@@ -55,6 +57,7 @@ public:
             postfix_pos = buffer.find(tmsocket_postfix, postfix_pos + tmsocket_postfix.size());
         }
     
+        buffer = ::std::move(org_buffer);
         if (prefix_pos != 0)
         {
             buffer = buffer.substr(prefix_pos);
@@ -71,14 +74,14 @@ public:
         auto copied_itr = origin_msg.begin();
         while (postfix_pos != ::std::string::npos)
         {
-            ret.assign(copied_itr, origin_msg.begin() + postfix_pos);
+            ret.append(copied_itr, origin_msg.begin() + postfix_pos);
             copied_itr = origin_msg.begin() + postfix_pos;
-            ret.assign(tmsocket_postfix);
+            ret.append(tmsocket_postfix);
             postfix_pos = origin_msg.find(tmsocket_postfix, postfix_pos + tmsocket_postfix.size());
         }
-        ret.assign(copied_itr, origin_msg.end());
-        ret.assign(tmsocket_postfix);
-        ret.assign(tmsocket_endmsg);
+        ret.append(copied_itr, origin_msg.end());
+        ret.append(tmsocket_postfix);
+        ret.append(tmsocket_endmsg);
         return ret;
     }
 };

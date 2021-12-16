@@ -1,4 +1,4 @@
-#include <tmsocket/include/client_stream.hpp>
+#include <tmsocket/include/client_communicator.hpp>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -15,7 +15,7 @@ int main(void)
     std::cout << "Please input server port: " << std::flush;
     std::string port;
     std::getline(std::cin, port);
-    tmsocket::client_stream cs;
+    tmsocket::client_communicator cs;
 
 
     cs.add_log([](const std::string& str) { std::cout << str << std::endl; });
@@ -27,7 +27,7 @@ int main(void)
         }
     );
 
-    cs.on_reveive([](const std::string& str) { std::cout << str << std::endl; });
+    cs.on_reveive([](const std::string& str) { std::cout << "Received: " << str << std::endl; });
 
     bool finished_connect = false;
     std::mutex finished_connect_mtx;
@@ -56,8 +56,9 @@ int main(void)
                 for (int i = 0; i < 10; ++i)
                 {
                     if (*unexpected) return;
-                    cs.send_to_server("To server!\n");
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    //                 tmsocket_postfixtmsocket_endmsgtmsocket_prefixtmsocket_prefixtmsocket_postfixtmsocket_postfixtmsocket_postfixtmsocket_endmsg
+                    cs.send_to_server("tmsocket_postfixtmsocket_endmsgtmsocket_prefixtmsocket_prefixtmsocket_postfixtmsocket_postfixtmsocket_postfixtmsocket_endmsg");
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 }
 
                 cs.end_communication();

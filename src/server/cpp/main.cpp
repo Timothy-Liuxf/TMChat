@@ -1,4 +1,4 @@
-#include <tmsocket/include/server_stream.hpp>
+#include <tmsocket/include/server_communicator.hpp>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -11,7 +11,7 @@ int main(void)
     std::cout << "Please input server port: " << std::flush;
     std::string port;
     std::getline(std::cin, port);
-    tmsocket::server_stream ss;
+    tmsocket::server_communicator ss;
     std::vector<int> client_fds;
     std::mutex mtx;
     ss.add_log([](const std::string& str) { std::cout << str << std::endl; });
@@ -50,8 +50,9 @@ int main(void)
 
             for (int i = 0; i < 10; ++i)
             {
-                ss.send_to_all_clients("All clients!\n");
+                ss.send_to_all_clients("tmsocket_postfixtmsocket_endmsgtmsocket_prefixtmsocket_prefixtmsocket_postfixtmsocket_postfixtmsocket_postfixtmsocket_endmsg");
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                std::cout << "Sent" << std::endl;
             }
 
             ::std::cout << "End communication!" << std::endl;

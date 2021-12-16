@@ -10,7 +10,7 @@ server_communicator::server_communicator()
     (
         [this] (const ::std::string& str)
         {
-            this->m_buffer.assign(str);
+            this->m_buffer.append(str);
             ::std::string msg;
             while (protocol::protocol::try_decode_message(this->m_buffer, msg))
             {
