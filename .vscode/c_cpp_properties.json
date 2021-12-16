@@ -3,7 +3,7 @@
         {
             "name": "Linux x86-64",
             "intelliSenseMode": "linux-gcc-x64",
-            "compilerPath": "",
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c99",
             "cppStandard": "c++11",
             "includePath": ["./src"]
@@ -11,7 +11,7 @@
         {
             "name": "Windows x86-64",
             "intelliSenseMode": "windows-msvc-x64",
-            "compilerPath": "",
+            "compilerPath": "${default}",
             "cStandard": "${default}",
             "cppStandard": "${default}",
             "includePath": [".\\src"]
