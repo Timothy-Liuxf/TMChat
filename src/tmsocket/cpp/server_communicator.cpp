@@ -12,7 +12,7 @@ server_communicator::server_communicator()
         {
             this->m_buffers[fd].append(str);
             ::std::string msg;
-            while (protocol::protocol::try_decode_message(this->m_buffers[fd], msg))
+            while (protocol_ns::protocol::try_decode_message(this->m_buffers[fd], msg))
             {
                 this->m_on_receive.invoke(fd, msg);
             }
@@ -77,13 +77,13 @@ server_communicator::on_disconnect(::std::function<void(int)> disconnect_func)
 void
 server_communicator::send_to_one_client(int client_fd, const ::std::string& msg)
 {
-    this->m_stm.send_to_one_client(client_fd, protocol::protocol::encode_message(msg));
+    this->m_stm.send_to_one_client(client_fd, protocol_ns::protocol::encode_message(msg));
 }
 
 void
 server_communicator::send_to_all_clients(const ::std::string& msg)
 {
-    this->m_stm.send_to_all_clients(protocol::protocol::encode_message(msg));
+    this->m_stm.send_to_all_clients(protocol_ns::protocol::encode_message(msg));
 }
 
 void

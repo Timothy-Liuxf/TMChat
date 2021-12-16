@@ -6,18 +6,18 @@
 #include <string>
 #include <map>
 #include <mutex>
+#include <limits>
+
+#include "server.hpp"
 
 TMCHAT_NAMESPACE_BEGIN
-
-struct user_data_t
-{
-    ::std::string passwd;
-    ::std::string name;
-};
 
 class local_database : public i_database<user_data_t>
 {
 public:
+
+    static_assert(sizeof(id_type) <= sizeof(::std::size_t), "The maximum number of users must be no more than the maximum of ::std::size_t!");
+
     local_database() = default;
     local_database(const local_database&) = delete;
     local_database& operator=(const local_database&) = delete;
@@ -35,21 +35,24 @@ public:
     add_data(const data_type& data) override
     {
         ::std::unique_lock<::std::mutex> lock(this->m_database_mtx);
+        if (this->m_database.size() == ::std::numeric_limits<id_type>::max())
+            throw database_full();
         id_type cnt = 0;
-        for (auto&& data : this->m_database)
+        for (auto&& data_tip : this->m_database)
         {
-            if (data.first != cnt)
+            if (data_tip.first != cnt)
             {
                 this->m_database.emplace(cnt, data);
                 return cnt;
             }
             ++cnt;
         }
+        throw database_full();
     }
 
     PREP_NODISCARD
     virtual bool
-    id_exists(const id_type& id) const
+    id_exists(const id_type& id) const override
     {
         ::std::unique_lock<::std::mutex> lock(this->m_database_mtx);
         return this->m_database.find(id) != this->m_database.end();
@@ -57,7 +60,7 @@ public:
 
     PREP_NODISCARD
     virtual bool
-    remove_data(const id_type& id)
+    remove_data(const id_type& id) override
     {
         ::std::unique_lock<::std::mutex> lock(this->m_database_mtx);
         return this->m_database.erase(id) == 1;
@@ -65,7 +68,7 @@ public:
 
     PREP_NODISCARD
     virtual bool
-    get_data(const id_type& id, data_type& out_data) const
+    get_data(const id_type& id, data_type& out_data) const override
     {
         ::std::unique_lock<::std::mutex> lock(this->m_database_mtx);
         auto itr = this->m_database.find(id);

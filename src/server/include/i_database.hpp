@@ -3,11 +3,23 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <exception>
 #include <prep/include/prep.h>
 
 #include "tmchat.h"
 
 TMCHAT_NAMESPACE_BEGIN
+
+class database_full : ::std::exception
+{
+public:
+    PREP_NODISCARD
+    virtual const char*
+    what() const noexcept override
+    {
+        return "The database is full!";
+    }
+};
 
 template <typename Data, typename Id = ::std::uint64_t>
 class i_database
@@ -35,6 +47,9 @@ public:
     PREP_NODISCARD
     virtual bool
     get_data(const id_type& id, data_type& out_data) const = 0;
+
+    virtual
+    ~i_database() = default;
 };
 
 TMCHAT_NAMESPACE_END

@@ -12,7 +12,7 @@ client_communicator::client_communicator()
         {
             this->m_buffer.append(str);
             ::std::string msg;
-            while (protocol::protocol::try_decode_message(this->m_buffer, msg))
+            while (protocol_ns::protocol::try_decode_message(this->m_buffer, msg))
             {
                 this->m_on_receive.invoke(msg);
             }
@@ -59,7 +59,7 @@ client_communicator::on_connect(::std::function<void(void)> connect_func)
 void
 client_communicator::send_to_server(const ::std::string& msg)
 {
-    this->m_ctm.send_to_server(protocol::protocol::encode_message(msg));
+    this->m_ctm.send_to_server(protocol_ns::protocol::encode_message(msg));
 }
 
 void

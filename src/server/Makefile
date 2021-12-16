@@ -30,5 +30,4 @@ include $(DEPS)
 
 .PHONY: clean
 clean:
-	-rm $(OBJECTS) $(DEPS)
-	-rmdir $(DEPS_DIR) $(BIN_DIR)
+	-rm -rf $(DEPS_DIR) $(BIN_DIR)
