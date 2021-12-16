@@ -1,12 +1,20 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "Linux x86-64",
             "intelliSenseMode": "linux-gcc-x64",
-            "compilerPath": "/usr/bin/g++",
+            "compilerPath": "",
             "cStandard": "c99",
             "cppStandard": "c++11",
             "includePath": ["./src"]
+        },
+        {
+            "name": "Windows x86-64",
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerPath": "",
+            "cStandard": "${default}",
+            "cppStandard": "${default}",
+            "includePath": [".\\src"]
         }
     ],
     "version": 4

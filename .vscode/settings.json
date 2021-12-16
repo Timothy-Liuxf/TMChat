@@ -55,6 +55,7 @@
         "streambuf": "cpp",
         "string_view": "cpp",
         "optional": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "*.i": "c"
     }
 }

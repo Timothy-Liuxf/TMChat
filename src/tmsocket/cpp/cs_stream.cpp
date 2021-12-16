@@ -35,11 +35,7 @@ server_stream::end_communication()
         this->wait_for_finish_pick();
         this->m_accept_clients_sem->acquire();
         this->m_accept_clients_sem.reset();
-        this->m_receive_from_client_sems.visit
-        <
-            void,
-            ::std::shared_ptr<prep::concurrent::semaphore>&
-        >
+        this->m_receive_from_client_sems.visit<void, ::std::shared_ptr<prep::concurrent::semaphore>&>
         (
             [] (::std::shared_ptr<prep::concurrent::semaphore>& sem) noexcept
             {
