@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <functional>
 #include <cassert>
+#include <vector>
 
 TMSOCKET_NAMESPACE_BEGIN
 
@@ -164,49 +165,41 @@ server_stream::receive_from_client(int client_fd, ::std::weak_ptr<::prep::concur
 
         try
         {
-            char* buf = new char[this->buf_size()];
-            
-            try
+            ::std::vector<char> buf(this->buf_size());
+
+            while (!this->is_finished())
             {
-                while (!this->is_finished())
+                if (!try_operate_sem(false))        // Release semaphore
                 {
-                    if (!try_operate_sem(false))        // Release semaphore
-                    {
-                        // Here shouldn't approach
-                        assert(0);
-                    }
-
-                    int len = ::recv(client_fd, buf, this->buf_size(), 0);
-
-                    if (!try_operate_sem(true))         // Acquire semaphore
-                    {
-                        // Communication has been closed
-                        return;
-                    }
-
-                    if (len < 0)
-                    {
-                        if (!this->is_finished()) this->m_msg_q.emplace(msg_type::error, "Fail to receive message!");
-                    }
-                    else if (len == 0)
-                    {
-                        {
-                            ::std::unique_lock<::std::mutex> lock(this->m_client_fds_lock);
-                            this->m_client_fds.erase(client_fd);
-                        }
-                        this->m_msg_q.emplace(msg_type::log, "A client closed the connection!");
-                        break;
-                    }
-                    else
-                    {
-                        this->m_msg_q.emplace(msg_type::msg, ::std::string(buf, len));
-                    }
+                    // Here shouldn't approach
+                    assert(0);
                 }
-            }
-            catch (...)
-            {
-                delete[] buf;
-                throw;
+
+                int len = ::recv(client_fd, buf.data(), this->buf_size(), 0);
+
+                if (!try_operate_sem(true))         // Acquire semaphore
+                {
+                    // Communication has been closed
+                    return;
+                }
+
+                if (len < 0)
+                {
+                    if (!this->is_finished()) this->m_msg_q.emplace(msg_type::error, "Fail to receive message!");
+                }
+                else if (len == 0)
+                {
+                    {
+                        ::std::unique_lock<::std::mutex> lock(this->m_client_fds_lock);
+                        this->m_client_fds.erase(client_fd);
+                    }
+                    this->m_msg_q.emplace(msg_type::log, "A client closed the connection!");
+                    break;
+                }
+                else
+                {
+                    this->m_msg_q.emplace(msg_type::msg, ::std::string(buf.data(), len));
+                }
             }
 
             if (!try_operate_sem(false))            // Release semaphore
@@ -215,7 +208,7 @@ server_stream::receive_from_client(int client_fd, ::std::weak_ptr<::prep::concur
                 assert(0);
             }
         }
-        catch(...)
+        catch (...)
         {
             try_operate_sem(false);     // Release semaphore
             throw;
@@ -417,36 +410,73 @@ client_stream::~client_stream() noexcept
 }
 
 void
-client_stream::receive_from_server() noexcept
+client_stream::receive_from_server(::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
 {
     try
     {
-        char* buf = new char[this->buf_size()];
+        ::std::function<bool(bool)> try_operate_sem = [&] (bool try_acquire)
+        {
+            auto act_ptr = sem_ptr.lock();
+            if (!static_cast<bool>(act_ptr))
+            {
+                return false;
+            }
+            if (try_acquire) act_ptr->acquire();
+            else act_ptr->release();
+            return true;
+        };
+
+        if (!try_operate_sem(true))     // Acquire semaphore
+        {
+            return;
+        }
+
         try
         {
+            ::std::vector<char> buf(this->buf_size());
             while (!this->is_finished())
             {
-                int len = ::recv(this->m_fd, buf, this->buf_size(), 0);
+                if (!try_operate_sem(false))        // Release semaphore
+                {
+                    // Here shouldn't approach
+                    assert(0);
+                }
+
+                int len = ::recv(this->m_fd, buf.data(), this->buf_size(), 0);
+                
+                if (!try_operate_sem(true))         // Acquire semaphore
+                {
+                    // Communication has been closed
+                    return;
+                }
+                
                 if (len < 0)
                 {
                     if (!this->is_finished()) this->m_msg_q.emplace(msg_type::critical_error, "Fail to receive message!");
                 }
                 else if (len == 0)
                 {
+                    this->m_msg_q.emplace(msg_type::log, "Server closed the connection.");
                     this->end_communication();
                 }
                 else
                 {
-                    this->m_msg_q.emplace(msg_type::msg, ::std::string(buf, len));
+                    this->m_msg_q.emplace(msg_type::msg, ::std::string(buf.data(), len));
                 }
             }
-            delete[] buf;
+
+            if (!try_operate_sem(false))            // Release semaphore
+            {
+                // Here shouldn't approach
+                assert(0);
+            }
         }
-        catch(...)
+        catch (...)
         {
-            delete[] buf;
+            try_operate_sem(false);     // Release semaphore
             throw;
         }
+        
     }
     catch (::std::bad_alloc&)
     {
@@ -468,7 +498,9 @@ client_stream::connect(const ::std::string& host, const ::std::string& port)
     }
     this->m_on_connect.invoke();
 
-    this->m_thrd_recv_from_server.reset(new ::std::thread(&client_stream::receive_from_server, this));
+    auto sem_ptr = ::std::make_shared<::prep::concurrent::semaphore>(1, 1);
+    this->m_receive_from_server_sem = sem_ptr;
+    ::std::thread { &client_stream::receive_from_server, this, sem_ptr }.detach();
     this->pick_msg();
 }
 
@@ -481,14 +513,15 @@ client_stream::send_to_server(const ::std::string& msg)
 void
 client_stream::end_communication()
 {
-    bool org_val = m_is_finished.exchange(true);
+    bool org_val = this->m_is_finished.exchange(true);
     if (!org_val)
     {
         this->m_msg_q.emplace(msg_type::finish, "");
         this->wait_for_finish_pick();
+        this->m_receive_from_server_sem->acquire();
+        this->m_receive_from_server_sem.reset();
         ::close_socket(this->m_fd);
         this->m_fd = -1;
-        this->m_thrd_recv_from_server->join();
     }
 }
 

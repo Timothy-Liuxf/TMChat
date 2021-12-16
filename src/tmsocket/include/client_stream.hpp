@@ -2,6 +2,7 @@
 #define TMSOCKET_CLIENT_STREAM_HPP
 
 #include <prep/include/concurrent_queue.hpp>
+#include <prep/include/semaphore.hpp>
 #include <tmsocket/include/socket_stream.hpp>
 #include <mutex>
 #include <thread>
@@ -33,10 +34,11 @@ public:
 private:
     ::prep::concurrent::event<> m_on_connect;
     ::std::mutex m_connect_mtx;
-    ::std::unique_ptr<::std::thread> m_thrd_recv_from_server;
+    // ::std::unique_ptr<::std::thread> m_thrd_recv_from_server;
+    ::std::shared_ptr<::prep::concurrent::semaphore> m_receive_from_server_sem;
 
     void
-    receive_from_server() noexcept;
+    receive_from_server(::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept;
 };
 
 TMSOCKET_NAMESPACE_END

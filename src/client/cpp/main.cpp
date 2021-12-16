@@ -50,7 +50,7 @@ int main(void)
                 cond.wait(lock, [&] { return finished_connect; });
             }
 
-            for (int i = 0; i < 10000; ++i)
+            for (int i = 0; i < 100; ++i)
             {
                 cs.send_to_server("To server!\n");
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
