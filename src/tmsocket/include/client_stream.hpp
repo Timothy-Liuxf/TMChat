@@ -7,6 +7,8 @@
 #include <mutex>
 #include <thread>
 #include <memory>
+#include <atomic>
+#include <condition_variable>
 
 TMSOCKET_NAMESPACE_BEGIN
 
@@ -34,7 +36,6 @@ public:
 private:
     ::prep::concurrent::event<> m_on_connect;
     ::std::mutex m_connect_mtx;
-    // ::std::unique_ptr<::std::thread> m_thrd_recv_from_server;
     ::std::shared_ptr<::prep::concurrent::semaphore> m_receive_from_server_sem;
 
     void

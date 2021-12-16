@@ -456,8 +456,7 @@ client_stream::receive_from_server(::std::weak_ptr<::prep::concurrent::semaphore
                 }
                 else if (len == 0)
                 {
-                    this->m_msg_q.emplace(msg_type::log, "Server closed the connection.");
-                    this->end_communication();
+                    this->m_msg_q.emplace(msg_type::disconnect_unexpectly, "Server closed the connection.");
                 }
                 else
                 {

@@ -26,7 +26,8 @@ public:
         critical_error = 1,
         log = 2,
         msg = 3,
-        finish = 4
+        finish = 4,
+        disconnect_unexpectly = 5
     };
 
     socket_stream(int buf_size = 128)
@@ -142,7 +143,34 @@ private:
     int m_fd;
 };
 
+class disconnect_unexpectedly : public tmsocket_exception
+{
+public:
+    explicit disconnect_unexpectedly(const ::std::string& str) : m_str(str) {}
+    explicit disconnect_unexpectedly(::std::string&& str) noexcept : m_str(::std::move(str)) {}
+    disconnect_unexpectedly(const disconnect_unexpectedly& ex) : m_str(ex.m_str) {}
+    disconnect_unexpectedly(disconnect_unexpectedly&& ex) noexcept : m_str(::std::move(ex.m_str)) {}
+    disconnect_unexpectedly& operator=(const disconnect_unexpectedly& ex)
+    {
+        this->m_str = ex.m_str;
+        return *this;
+    }
+    disconnect_unexpectedly& operator=(disconnect_unexpectedly&& ex) noexcept
+    {
+        this->m_str = ::std::move(ex.m_str);
+        return *this;
+    }
 
+    PREP_NODISCARD
+    virtual const char*
+    what() const noexcept override
+    {
+        return m_str.c_str();
+    }
+
+private:
+    ::std::string m_str;
+};
 
 TMSOCKET_NAMESPACE_END
 

@@ -25,6 +25,9 @@ socket_stream::pick_msg()
             case msg_type::msg:
                 this->m_on_receive.invoke(msg.second);
                 break;
+            case msg_type::disconnect_unexpectly:
+                throw disconnect_unexpectedly(::std::move(msg.second));
+                break;
             }
         }
     quit:
