@@ -11,7 +11,7 @@
 
 TMSOCKET_NAMESPACE_BEGIN
 
-class server_stream final : public socket_stream
+class server_stream : public socket_stream
 {
 public:
 
@@ -19,6 +19,12 @@ public:
 
     void
     listen(const ::std::string& host, const ::std::string& port);
+
+    void
+    listen(const ::std::string& port)
+    {
+        listen("", port);
+    }
 
     virtual void
     end_communication() override;

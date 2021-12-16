@@ -12,7 +12,7 @@
 
 TMSOCKET_NAMESPACE_BEGIN
 
-class client_stream final : public socket_stream
+class client_stream : public socket_stream
 {
 public:
     virtual
