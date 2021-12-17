@@ -32,4 +32,4 @@
 
 // Reference static library
 
-#define REFERENCE_STATIC_LIB(libname)
+#define PREP_REFERENCE_STATIC_LIB(libname)

@@ -5,14 +5,6 @@
 #ifndef TMSOCKET_DETAILS_PROTOCOL_IPP__
 #define TMSOCKET_DETAILS_PROTOCOL_IPP__
 
-#include <prep/include/prep.h>
-#include <cstddef>
-#include <string>
-#include <utility>
-#include <algorithm>
-
-TMSOCKET_NAMESPACE_BEGIN
-
 #define PROTOCAL_INLINE_NAMESPACE_BEGIN inline namespace protocol_ns {
 #define PROTOCAL_INLINE_NAMESPACE_END }
 
@@ -93,7 +85,5 @@ PROTOCAL_INLINE_NAMESPACE_END
 
 #undef PROTOCAL_INLINE_NAMESPACE_END
 #undef PROTOCAL_INLINE_NAMESPACE_BEGIN
-
-TMSOCKET_NAMESPACE_END
 
 #endif // #ifndef TMSOCKET_DETAILS_PROTOCOL_IPP__

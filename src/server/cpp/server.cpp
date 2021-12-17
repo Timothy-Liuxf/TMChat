@@ -23,9 +23,9 @@ server::server(create_database_t create_database) : m_database_ptr(create_databa
     );
     this->m_communicator.add_log([](const ::std::string& str) { cout << str << endl; });
 
-    this->m_communicator.on_connect([](int fd) { cout << "A client: " << fd << " connected!" << endl; });
-    this->m_communicator.on_reveive([this](int fd, const ::std::string& msg) { this->on_receive(fd, msg); });
-    this->m_communicator.on_disconnect([this](int fd) { this->on_disconnect(fd); });
+    this->m_communicator.on_connect([](tmsocket_t fd) { cout << "A client: " << fd << " connected!" << endl; });
+    this->m_communicator.on_reveive([this](tmsocket_t fd, const ::std::string& msg) { this->on_receive(fd, msg); });
+    this->m_communicator.on_disconnect([this](tmsocket_t fd) { this->on_disconnect(fd); });
 
     cout << "Please input server port: " << std::flush;
     ::std::string port;
@@ -42,7 +42,7 @@ server::correct_passwd(const ::std::string& passwd, const data_type& data)
 }
 
 void
-server::on_disconnect(int fd)
+server::on_disconnect(tmsocket_t fd)
 {
     {
         ::std::unique_lock<::std::mutex> lock(this->m_fd_to_id_mtx);
@@ -52,7 +52,7 @@ server::on_disconnect(int fd)
 }
 
 void
-server::on_receive(int fd, const ::std::string& msg)
+server::on_receive(tmsocket_t fd, const ::std::string& msg)
 {
     struct invalid_message : ::std::exception
     {
@@ -65,16 +65,16 @@ server::on_receive(int fd, const ::std::string& msg)
 
     try
     {
+        using msg_type = common::protocol::msg_type;
         ::std::istringstream sin;
         sin.str(msg);
-        int msg_type_val;
+        ::std::underlying_type<msg_type>::type msg_type_val;
         sin >> msg_type_val;
         while (sin && sin.get() != '\n');
         if (!sin)
         {
             throw invalid_message();
         }
-        using msg_type = common::protocol::msg_type;
         switch (static_cast<msg_type>(msg_type_val))
         {
         case msg_type::register_account:
@@ -115,19 +115,29 @@ server::on_receive(int fd, const ::std::string& msg)
                     {
                         {
                             ::std::unique_lock<::std::mutex> lock(this->m_fd_to_id_mtx);
-                            this->m_fd_to_id[fd] = id;
+                            if (this->m_fd_to_id.find(fd) == this->m_fd_to_id.end())
+                            {
+                                this->m_fd_to_id[fd] = id;
+                                this->m_communicator.send_to_one_client(fd,
+                                    ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_seccess)) + '\n' +
+                                    data.name);
+                            }
+                            else
+                            {
+                                // Already login.
+                                this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_failed)) + '\n');
+                            }
                         }
-                        this->m_communicator.send_to_one_client(fd, 
-                            ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_seccess)) + '\n' +
-                            data.name);
                     }
                     else
                     {
+                        // Password incorrect
                         this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_failed)) + '\n');
                     }
                 }
                 else
                 {
+                    // ID not exist
                     this->m_communicator.send_to_one_client(fd, ::std::to_string(common::protocol::msg_type_to_integer(msg_type::login_failed)) + '\n');
                 }
             }

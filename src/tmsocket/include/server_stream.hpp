@@ -5,15 +5,19 @@
 #include <prep/include/concurrent_list.hpp>
 #include <prep/include/concurrent_queue.hpp>
 #include <prep/include/os.h>
+#include <prep/include/os_net_defs.h>
 #include <prep/include/event.hpp>
+#include <tmsocket/include/defs.hpp>
 
 #include <unordered_set>
 #include <thread>
 #include <mutex>
-
-#include "details/socket_stream.ipp"
+#include <atomic>
+#include <type_traits>
 
 TMSOCKET_NAMESPACE_BEGIN
+
+#include "details/socket_stream.ipp"
 
 class server_stream : private socket_stream
 {
@@ -45,25 +49,25 @@ public:
     }
 
     void
-    on_connect(::std::function<void(int)> connect_func)
+    on_connect(::std::function<void(tmsocket_t)> connect_func)
     {
         this->m_on_connect.subscript(::std::move(connect_func));
     }
 
     void
-    on_disconnect(::std::function<void(int)> disconnect_func)
+    on_disconnect(::std::function<void(tmsocket_t)> disconnect_func)
     {
         this->m_on_disconnect.subscript(::std::move(disconnect_func));
     }
 
     void
-    on_reveive(::std::function<void(int, const ::std::string&)> func)
+    on_reveive(::std::function<void(tmsocket_t, const ::std::string&)> func)
     {
         m_on_receive.subscript(::std::move(func));
     }
 
     void
-    send_to_one_client(int client_fd, const ::std::string& msg);
+    send_to_one_client(tmsocket_t client_fd, const ::std::string& msg);
 
     void
     send_to_all_clients(const ::std::string& msg);
@@ -87,20 +91,20 @@ private:
     };
 
     ::prep::concurrent::event<> m_on_listen;
-    ::prep::concurrent::event<int> m_on_connect;
-    ::prep::concurrent::event<int> m_on_disconnect;
-    ::prep::concurrent::event<int, const ::std::string&> m_on_receive;
+    ::prep::concurrent::event<tmsocket_t> m_on_connect;
+    ::prep::concurrent::event<tmsocket_t> m_on_disconnect;
+    ::prep::concurrent::event<tmsocket_t, const ::std::string&> m_on_receive;
     ::std::mutex m_connect_mtx;
-    ::std::unordered_set<int> m_client_fds;
+    ::std::unordered_set<tmsocket_t> m_client_fds;
     ::std::mutex m_client_fds_lock;
 
-    void receive_from_client(int client_fd, ::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept;
+    void receive_from_client(tmsocket_t client_fd, ::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept;
     void accept_clients(::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept;
     ::std::shared_ptr<prep::concurrent::semaphore> m_accept_clients_sem;
     ::prep::concurrent::concurrent_list<::std::shared_ptr<prep::concurrent::semaphore>> m_receive_from_client_sems;
 
     bool m_finish_pick = false;
-    ::prep::concurrent::concurrent_queue<::std::pair<msg_type, ::std::pair<int, ::std::string>>> m_msg_q;
+    ::prep::concurrent::concurrent_queue<::std::pair<msg_type, ::std::pair<int64_t, ::std::string>>> m_msg_q;
     mutable ::std::condition_variable m_finish_pick_cond;
     mutable ::std::mutex m_finish_pick_mtx;
 };

@@ -1,18 +1,9 @@
+#if !defined(TMSOCKET_SERVER_STREAM_HPP__) && !defined(TMSOCKET_CLIENT_STREAM_HPP__)
+#   error Please include <client_stream.hpp> or <server_stream.hpp> instead.
+#endif
+
 #ifndef TMSOCKET_DETAILS_SOCKET_STREAM_IPP__
 #define TMSOCKET_DETAILS_SOCKET_STREAM_IPP__
-
-#include <prep/include/event.hpp>
-#include <tmsocket/include/defs.hpp>
-#include <tmsocket/include/netexcept.hpp>
-#include <string>
-#include <atomic>
-#include <functional>
-#include <utility>
-#include <memory>
-#include <mutex>
-#include <condition_variable>
-
-TMSOCKET_NAMESPACE_BEGIN
 
 class socket_stream
 {
@@ -53,14 +44,12 @@ public:
 
 protected:
     
-    int m_fd;
+    tmsocket_t m_fd;
     ::std::atomic_bool m_is_finished;
     ::std::atomic_bool m_is_connected;
     const int m_buf_size;
     ::std::string m_buf;
     ::prep::concurrent::event<const ::std::string&> m_logger;
 };
-
-TMSOCKET_NAMESPACE_END
 
 #endif // #ifndef TMSOCKET_DETAILS_SOCKET_STREAM_IPP__

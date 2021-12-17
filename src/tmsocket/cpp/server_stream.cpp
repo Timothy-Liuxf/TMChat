@@ -1,11 +1,23 @@
 #include "../include/server_stream.hpp"
 
 #include <prep/include/os_net.h>
+#include <prep/include/event.hpp>
+#include <tmsocket/include/defs.hpp>
+#include <tmsocket/include/netexcept.hpp>
 #include <cstring>
 #include <stdexcept>
 #include <functional>
 #include <cassert>
 #include <vector>
+#include <string>
+#include <atomic>
+#include <functional>
+#include <utility>
+#include <memory>
+#include <mutex>
+#include <cstddef>
+#include <limits>
+#include <condition_variable>
 
 TMSOCKET_NAMESPACE_BEGIN
 
@@ -85,7 +97,7 @@ server_stream::end_communication()
     bool org_val = m_is_finished.exchange(true);
     if (!org_val)
     {
-        this->m_msg_q.emplace(msg_type::finish, ::std::make_pair<int, ::std::string>(0, ""));
+        this->m_msg_q.emplace(msg_type::finish, ::std::make_pair<int64_t, ::std::string>(0, ""));
         this->wait_for_finish_pick();
         this->m_accept_clients_sem->acquire();
         this->m_accept_clients_sem.reset();
@@ -114,7 +126,7 @@ server_stream::end_communication()
 }
 
 void
-server_stream::receive_from_client(int client_fd, ::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
+server_stream::receive_from_client(tmsocket_t client_fd, ::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
 {
     try
     {
@@ -158,7 +170,7 @@ server_stream::receive_from_client(int client_fd, ::std::weak_ptr<::prep::concur
                 if (len < 0)
                 {
                     if (!this->is_finished())
-                        this->m_msg_q.emplace(msg_type::error, ::std::pair<int, ::std::string>(client_fd, "Fail to receive message!"));
+                        this->m_msg_q.emplace(msg_type::error, ::std::pair<int64_t, ::std::string>(client_fd, "Fail to receive message!"));
                 }
                 else if (len == 0)
                 {
@@ -166,12 +178,12 @@ server_stream::receive_from_client(int client_fd, ::std::weak_ptr<::prep::concur
                         ::std::unique_lock<::std::mutex> lock(this->m_client_fds_lock);
                         this->m_client_fds.erase(client_fd);
                     }
-                    this->m_msg_q.emplace(msg_type::disconnect, ::std::pair<int, ::std::string>(client_fd, "A client closed the connection!"));
+                    this->m_msg_q.emplace(msg_type::disconnect, ::std::pair<int64_t, ::std::string>(client_fd, "A client closed the connection!"));
                     break;
                 }
                 else
                 {
-                    this->m_msg_q.emplace(msg_type::msg, ::std::pair<int, ::std::string>(client_fd, ::std::string(buf.data(), len)));
+                    this->m_msg_q.emplace(msg_type::msg, ::std::pair<int64_t, ::std::string>(client_fd, ::std::string(buf.data(), len)));
                 }
             }
 
@@ -190,11 +202,11 @@ server_stream::receive_from_client(int client_fd, ::std::weak_ptr<::prep::concur
     }
     catch (::std::bad_alloc&)
     {
-        this->m_msg_q.emplace(msg_type::critical_error, ::std::pair<int, ::std::string>(0, "Cannot allocate buffer!"));
+        this->m_msg_q.emplace(msg_type::critical_error, ::std::pair<int64_t, ::std::string>(0, "Cannot allocate buffer!"));
     }
     catch (::std::exception& e)
     {
-        this->m_msg_q.emplace(msg_type::error, ::std::pair<int, ::std::string>(0, e.what()));
+        this->m_msg_q.emplace(msg_type::error, ::std::pair<int64_t, ::std::string>(0, e.what()));
     }
 }
 
@@ -224,9 +236,9 @@ server_stream::accept_clients(::std::weak_ptr<::prep::concurrent::semaphore> sem
         {
             while (!this->is_finished())
             {
-                sockaddr clientaddr;
+                /*sockaddr clientaddr;
                 socklen_t clientaddr_len = sizeof(clientaddr);
-                ::std::memset(&clientaddr, 0, sizeof(clientaddr));
+                ::std::memset(&clientaddr, 0, sizeof(clientaddr));*/
                 auto fd = this->m_fd;
 
                 if (!try_operate_sem(false))        // Release semaphore
@@ -235,18 +247,18 @@ server_stream::accept_clients(::std::weak_ptr<::prep::concurrent::semaphore> sem
                     assert(0);
                 }
 
-                int client_fd = ::accept(fd, &clientaddr, &clientaddr_len);
+                tmsocket_t client_fd = ::accept(fd, nullptr, nullptr);
 
                 if (!try_operate_sem(true))         // Acquire semaphore
                 {
                     // Communication has been closed
                     return;
                 }
-
-                if (client_fd < 0)
+                
+                if (invalid_socket(client_fd))
                 {
                     if (!this->is_finished()) this->m_msg_q.emplace(msg_type::error,
-                    ::std::pair<int, ::std::string>((int)get_net_error(), netexcept{"Accept client failed!", get_net_error()}.what())
+                    ::std::pair<int64_t, ::std::string>(static_cast<int64_t>(get_net_error()), netexcept{"Accept client failed!", get_net_error()}.what())
                     );
                 }
                 else
@@ -278,7 +290,7 @@ server_stream::accept_clients(::std::weak_ptr<::prep::concurrent::semaphore> sem
     }
     catch (::std::exception& e)
     {
-        this->m_msg_q.emplace(msg_type::critical_error, ::std::pair<int, ::std::string>(0, e.what()));
+        this->m_msg_q.emplace(msg_type::critical_error, ::std::pair<int64_t, ::std::string>(0, e.what()));
     }
 }
 
@@ -317,7 +329,7 @@ server_stream::listen(const ::std::string& host, const ::std::string& port)
 }
 
 void
-server_stream::send_to_one_client(int client_fd, const ::std::string& msg)
+server_stream::send_to_one_client(tmsocket_t client_fd, const ::std::string& msg)
 {
     if (!this->is_connected())
     {

@@ -1,20 +1,23 @@
 #ifndef TMSOCKET_CLIENT_STREAM_HPP__
 #define TMSOCKET_CLIENT_STREAM_HPP__
 
+#include <prep/include/prep.h>
 #include <prep/include/concurrent_queue.hpp>
 #include <prep/include/semaphore.hpp>
 #include <prep/include/concurrent_queue.hpp>
 #include <prep/include/os.h>
+#include <prep/include/os_net_defs.h>
 #include <prep/include/event.hpp>
+#include <tmsocket/include/defs.hpp>
 #include <mutex>
 #include <thread>
 #include <memory>
 #include <atomic>
 #include <condition_variable>
 
-#include "details/socket_stream.ipp"
-
 TMSOCKET_NAMESPACE_BEGIN
+
+#include "details/socket_stream.ipp"
 
 class client_stream : private socket_stream
 {

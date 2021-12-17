@@ -79,7 +79,7 @@ client::client()
                     {
                         cout << "Input illegal!" << endl;
                         cin.clear();
-                        cin.ignore(::std::numeric_limits<::std::streamsize>::max(), '\n');
+                        cin.ignore((::std::numeric_limits<::std::streamsize>::max)(), '\n');
                         break;
                     }
                     this->m_communicator.send_to_server(::std::to_string(common::protocol::msg_type_to_integer(msg_type::register_account)) + '\n' +
@@ -109,7 +109,7 @@ client::client()
                     {
                         cout << "Input illegal!" << endl;
                         cin.clear();
-                        cin.ignore(::std::numeric_limits<::std::streamsize>::max(), '\n');
+                        cin.ignore((::std::numeric_limits<::std::streamsize>::max)(), '\n');
                         break;
                     }
                     this->m_communicator.send_to_server(::std::to_string(common::protocol::msg_type_to_integer(msg_type::login)) + '\n' +
@@ -148,7 +148,7 @@ client::client()
                     if (!cin)
                     {
                         cin.clear();
-                        cin.ignore(::std::numeric_limits<::std::streamsize>::max(), '\n');
+                        cin.ignore((::std::numeric_limits<::std::streamsize>::max)(), '\n');
                         break;
                     }
                     this->m_communicator.send_to_server(::std::to_string(common::protocol::msg_type_to_integer(msg_type::chat)) + '\n' + buf);
@@ -177,16 +177,17 @@ client::on_reveive(const ::std::string& msg)
 
     try
     {
+        using msg_type = common::protocol::msg_type;
+
         ::std::istringstream sin;
         sin.str(msg);
-        int msg_type_val;
+        ::std::underlying_type<msg_type>::type msg_type_val;
         sin >> msg_type_val;
         while (sin && sin.get() != '\n');
         if (!sin)
         {
             throw invalid_message();
         }
-        using msg_type = common::protocol::msg_type;
         switch (static_cast<msg_type>(msg_type_val))
         {
         case msg_type::register_failed:

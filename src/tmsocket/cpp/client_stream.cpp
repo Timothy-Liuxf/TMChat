@@ -1,11 +1,23 @@
 #include "../include/client_stream.hpp"
 
 #include <prep/include/os_net.h>
+#include <prep/include/event.hpp>
+#include <tmsocket/include/defs.hpp>
+#include <tmsocket/include/netexcept.hpp>
 #include <cstring>
 #include <stdexcept>
 #include <functional>
 #include <cassert>
 #include <vector>
+#include <string>
+#include <atomic>
+#include <functional>
+#include <utility>
+#include <memory>
+#include <mutex>
+#include <cstddef>
+#include <limits>
+#include <condition_variable>
 
 TMSOCKET_NAMESPACE_BEGIN
 
@@ -112,7 +124,7 @@ client_stream::receive_from_server(::std::weak_ptr<::prep::concurrent::semaphore
                     assert(0);
                 }
 
-                int len = ::recv(this->m_fd, buf.data(), this->buf_size(), 0);
+                int len = ::recv(this->m_fd, buf.data(), static_cast<int>(this->buf_size()), 0);
                 
                 if (!try_operate_sem(true))         // Acquire semaphore
                 {

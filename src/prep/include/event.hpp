@@ -35,14 +35,14 @@ public:
     void
     subscript(const func_type& func)
     {
-        ::std::unique_lock<::std::mutex>(this->m_mtx);
+        ::std::unique_lock<::std::mutex> lock(this->m_mtx);
         m_manners.emplace_back(func);
     }
 
     void
     subscript(func_type&& func)
     {
-        ::std::unique_lock<::std::mutex>(this->m_mtx);
+        ::std::unique_lock<::std::mutex> lock(this->m_mtx);
         m_manners.emplace_back(::std::move(func));
     }
 

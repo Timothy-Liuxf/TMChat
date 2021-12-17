@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <string>
+#include <assert.h>
 
 TMSOCKET_NAMESPACE_BEGIN
 
@@ -11,10 +12,12 @@ netexcept::netexcept(const char* msg, ::prep::errno_type no)
 {
     ::std::string generate_result = ::std::string(msg) + " Error code: " + ::std::to_string(no);
     char* result = (char*)malloc((generate_result.size() + 1) * sizeof(char));
+    assert(result != NULL);
     ::strcpy(result, generate_result.c_str());
     m_str.reset(result);
 }
 
+PREP_NODISCARD
 const char*
 netexcept::what() const noexcept
 {

@@ -30,7 +30,7 @@ public:
     add_log(::std::function<void(const ::std::string&)> log_func);
 
     void
-    on_reveive(::std::function<void(int, const ::std::string&)> func);
+    on_reveive(::std::function<void(tmsocket_t, const ::std::string&)> func);
 
     void
     listen(const ::std::string& host, const ::std::string& port);
@@ -42,13 +42,13 @@ public:
     on_listen(::std::function<void(void)> listen_func);
 
     void
-    on_connect(::std::function<void(int)> connect_func);
+    on_connect(::std::function<void(tmsocket_t)> connect_func);
 
     void
-    on_disconnect(::std::function<void(int)> disconnect_func);
+    on_disconnect(::std::function<void(tmsocket_t)> disconnect_func);
 
     void
-    send_to_one_client(int client_fd, const ::std::string& msg);
+    send_to_one_client(tmsocket_t client_fd, const ::std::string& msg);
 
     void
     send_to_all_clients(const ::std::string& msg);
@@ -58,8 +58,8 @@ public:
 
 private:
     server_stream m_stm;
-    ::std::map<int, ::std::string> m_buffers;
-    ::prep::concurrent::event<int, const ::std::string&> m_on_receive;
+    ::std::map<tmsocket_t, ::std::string> m_buffers;
+    ::prep::concurrent::event<tmsocket_t, const ::std::string&> m_on_receive;
 };
 
 TMSOCKET_NAMESPACE_END

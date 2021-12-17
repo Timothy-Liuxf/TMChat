@@ -35,7 +35,7 @@ public:
     add_data(const data_type& data) override
     {
         ::std::unique_lock<::std::mutex> lock(this->m_database_mtx);
-        if (this->m_database.size() == ::std::numeric_limits<id_type>::max())
+        if (this->m_database.size() == (::std::numeric_limits<id_type>::max)())
             throw database_full();
         id_type cnt = 0;
         for (auto&& data_tip : this->m_database)

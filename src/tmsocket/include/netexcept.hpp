@@ -3,6 +3,7 @@
 
 #include <prep/include/prep.h>
 #include <prep/include/os.h>
+#include <prep/include/os_net_defs.h>
 #include <tmsocket/include/defs.hpp>
 #include <exception>
 #include <memory>
@@ -28,6 +29,13 @@ public:
 private:
     ::prep::errno_type m_no;
     ::std::unique_ptr<char, void(*)(void*)> m_str;
+};
+
+
+class initialize_network_failed : public netexcept
+{
+public:
+    initialize_network_failed(const char* msg, prep::errno_type no) : netexcept(msg, no) {}
 };
 
 class invalid_input : public netexcept
@@ -64,7 +72,7 @@ public:
 class client_not_exist : public tmsocket_exception
 {
 public:
-    client_not_exist(int fd) : m_fd(fd) {}
+    client_not_exist(tmsocket_t fd) : m_fd(fd) {}
 
     PREP_NODISCARD
     virtual const char*
@@ -74,14 +82,14 @@ public:
     }
 
     PREP_NODISCARD
-    int
+    tmsocket_t
     get_fd() const noexcept
     {
         return this->m_fd;
     }
 
 private:
-    int m_fd;
+    tmsocket_t m_fd;
 };
 
 class disconnect_unexpectedly : public tmsocket_exception

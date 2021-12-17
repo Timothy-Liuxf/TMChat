@@ -33,10 +33,10 @@ public:
 private:
 
     void
-    on_receive(int fd, const ::std::string& msg);
+    on_receive(tmsocket_t fd, const ::std::string& msg);
 
     void
-    on_disconnect(int fd);
+    on_disconnect(tmsocket_t fd);
 
     PREP_NODISCARD static
     bool
@@ -44,7 +44,7 @@ private:
 
     ::tmsocket::server_communicator m_communicator;
     ::std::unique_ptr<i_database<data_type>> m_database_ptr;
-    ::std::map<int, id_type> m_fd_to_id;
+    ::std::map<tmsocket_t, id_type> m_fd_to_id;
     mutable ::std::mutex m_fd_to_id_mtx;
 };
 

@@ -20,7 +20,7 @@ private:
     ::std::atomic_bool m_login_success { false };
     ::prep::concurrent::semaphore m_login_sem { 0, 1 };
     ::std::string m_name;
-    ::tmchat::default_id_type m_id;
+    ::tmchat::default_id_type m_id {};
 
     void
     on_reveive(const ::std::string& msg);

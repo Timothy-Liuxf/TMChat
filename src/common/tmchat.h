@@ -10,7 +10,7 @@
 
 namespace tmchat
 {
-    using default_id_type = ::std::uint64_t;
+    using default_id_type = ::std::uint32_t;
 }
 
 #else // #ifdef __cplusplus
