@@ -132,11 +132,11 @@ client_stream::receive_from_server(::std::weak_ptr<::prep::concurrent::semaphore
                     return;
                 }
                 
-                if (len < 0)
+                if (receive_error(len))
                 {
                     if (!this->is_finished()) this->m_msg_q.emplace(msg_type::critical_error, "Fail to receive message!");
                 }
-                else if (len == 0)
+                else if (socket_shutdown(len))
                 {
                     this->m_msg_q.emplace(msg_type::disconnect_unexpectly, "Server closed the connection.");
                 }

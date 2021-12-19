@@ -9,9 +9,11 @@
 #   include <WinSock2.h>
 #   include <ws2tcpip.h>
 
-#   define get_net_error() WSAGetLastError()
-#   define close_socket(fd) closesocket(fd)
-#   define invalid_socket(fd) ((fd) == INVALID_SOCKET)
+#   define get_net_error()					WSAGetLastError()
+#   define close_socket(fd)					closesocket(fd)
+#   define invalid_socket(fd)				((fd) == INVALID_SOCKET)
+#   define socket_shutdown(return_by_recv)	((return_by_recv) == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
+#   define receive_error(return_by_recv)	((return_by_recv) == SOCKET_ERROR && WSAGetLastError() != WSAECONNRESET)
 
 #elif defined(__linux__) || defined(__unix__)
 
@@ -21,6 +23,8 @@
 #   define get_net_error() (errno)
 #   define close_socket(fd) close(fd)
 #   define invalid_socket(fd) ((fd) < 0)
+#   define socket_shutdown(return_by_recv)	((return_by_recv) == 0)
+#   define receive_error(return_by_recv)	((return_by_recv) < 0)
 
 #endif // #if defined(_WIN32)
 

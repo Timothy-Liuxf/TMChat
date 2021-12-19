@@ -168,12 +168,12 @@ server_stream::receive_from_client(tmsocket_t client_fd, ::std::weak_ptr<::prep:
                     return;
                 }
 
-                if (len < 0)
+                if (receive_error(len))
                 {
                     if (!this->is_finished())
                         this->m_msg_q.emplace(msg_type::error, ::std::pair<int64_t, ::std::string>(client_fd, "Fail to receive message!"));
                 }
-                else if (len == 0)
+                else if (socket_shutdown(len))
                 {
                     {
                         ::std::unique_lock<::std::mutex> lock(this->m_client_fds_lock);
