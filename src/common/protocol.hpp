@@ -16,16 +16,16 @@ public:
 
     enum class msg_type : uint32_t
     {
-        none = 0,
-        register_account = 1,   // type \n passwd \n username
-        register_success = 2,   // type \n id \n
-        register_failed = 3,    // type \n
-        login = 4,              // type \n id \n passwd
-        login_seccess = 5,      // type \n name
-        login_failed = 6,       // type \n
-        chat = 10,              // for server: type \n message; for client: type \n name \n message
-        chat_seccess = 11,      // type \n message
-        chat_failed = 12        // type \n message
+        none                = 0,    // preserve for future use
+        register_account    = 1,    // type \n passwd \n username
+        register_success    = 2,    // type \n id \n
+        register_failed     = 3,    // type \n
+        login               = 4,    // type \n id \n passwd
+        login_seccess       = 5,    // type \n name
+        login_failed        = 6,    // type \n
+        chat                = 10,   // for server: type \n message; for client: type \n name \n message
+        chat_seccess        = 11,   // type \n message
+        chat_failed         = 12    // type \n message
     };
 
     PREP_NODISCARD PREP_FORCED_INLINE

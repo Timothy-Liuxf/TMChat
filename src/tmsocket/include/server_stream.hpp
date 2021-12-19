@@ -103,6 +103,7 @@ private:
     ::std::shared_ptr<prep::concurrent::semaphore> m_accept_clients_sem;
     ::prep::concurrent::concurrent_list<::std::shared_ptr<prep::concurrent::semaphore>> m_receive_from_client_sems;
 
+    ::std::atomic_bool m_begin_pick_msg{ false };
     bool m_finish_pick = false;
     ::prep::concurrent::concurrent_queue<::std::pair<msg_type, ::std::pair<int64_t, ::std::string>>> m_msg_q;
     mutable ::std::condition_variable m_finish_pick_cond;

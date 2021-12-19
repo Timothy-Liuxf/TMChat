@@ -182,6 +182,7 @@ client_stream::connect(const ::std::string& host, const ::std::string& port)
     auto sem_ptr = ::std::make_shared<::prep::concurrent::semaphore>(1, 1);
     this->m_receive_from_server_sem = sem_ptr;
     ::std::thread { &client_stream::receive_from_server, this, sem_ptr }.detach();
+    this->m_begin_pick_msg = true;
     this->pick_msg();
 }
 
@@ -198,7 +199,8 @@ client_stream::end_communication()
     if (!org_val)
     {
         this->m_msg_q.emplace(msg_type::finish, "");
-        this->wait_for_finish_pick();
+        if (this->m_begin_pick_msg) this->wait_for_finish_pick();
+        if (!this->m_is_connected) return;
         this->m_receive_from_server_sem->acquire();
         this->m_receive_from_server_sem.reset();
         ::close_socket(this->m_fd);

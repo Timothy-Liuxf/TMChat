@@ -98,7 +98,8 @@ server_stream::end_communication()
     if (!org_val)
     {
         this->m_msg_q.emplace(msg_type::finish, ::std::make_pair<int64_t, ::std::string>(0, ""));
-        this->wait_for_finish_pick();
+        if (this->m_begin_pick_msg) this->wait_for_finish_pick();
+        if (!this->m_is_connected) return;
         this->m_accept_clients_sem->acquire();
         this->m_accept_clients_sem.reset();
         this->m_receive_from_client_sems.visit<void, ::std::shared_ptr<prep::concurrent::semaphore>&>
@@ -301,6 +302,7 @@ server_stream::listen(const ::std::string& host, const ::std::string& port)
         ::std::unique_lock<::std::mutex> lock(this->m_connect_mtx);
         
         this->m_fd = connect_impl(host, port, this, &::bind);
+        this->m_is_connected = true;
 
         try
         {
@@ -317,14 +319,13 @@ server_stream::listen(const ::std::string& host, const ::std::string& port)
             this->m_fd = -1;
             throw;
         }
-
-        this->m_is_connected = true;
     }
     
     this->m_on_listen.invoke();
     this->m_accept_clients_sem = ::std::make_shared<prep::concurrent::semaphore>(1, 1);
     ::std::thread { &server_stream::accept_clients, this, this->m_accept_clients_sem }.detach();
 
+    this->m_begin_pick_msg = true;
     this->pick_msg();
 }
 

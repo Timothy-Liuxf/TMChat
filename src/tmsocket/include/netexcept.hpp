@@ -11,7 +11,7 @@
 
 TMSOCKET_NAMESPACE_BEGIN
 
-class tmsocket_exception : ::std::exception {};
+class tmsocket_exception : public ::std::exception {};
 
 class netexcept : public tmsocket_exception
 {

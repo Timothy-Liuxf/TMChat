@@ -31,6 +31,7 @@ client::client()
     bool has_connected = false;
     ::std::mutex has_connected_mtx;
     ::std::condition_variable has_connected_cond;
+    ::std::atomic_bool connection_failed { false };
 
     this->m_communicator.on_connect
     (
@@ -54,6 +55,11 @@ client::client()
             {
                 ::std::unique_lock<::std::mutex> lock(has_connected_mtx);
                 has_connected_cond.wait(lock, [&] { return has_connected; });
+            }
+
+            if (connection_failed)
+            {
+                return;
             }
 
             cout << "Please choose:\nA. login B. register C. quit\n" << ::std::flush;
@@ -159,8 +165,20 @@ client::client()
         }
     );
 
-    this->m_communicator.connect(host, port);
-    thr.join();
+    try
+    {
+        ::std::cout << "Connecting..." << ::std::endl;
+        this->m_communicator.connect(host, port);
+        thr.join();
+    }
+    catch (...)
+    {
+        has_connected = true;
+        connection_failed = true;
+        has_connected_cond.notify_all();
+        thr.join();
+        throw;
+    }
 }
 
 void

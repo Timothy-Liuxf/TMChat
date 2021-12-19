@@ -28,6 +28,7 @@ The `options` can be:
   + `OPTIMIZATION`: Specify the level of optimization. The value can be `-O0`, `-O1`, `-Os`, etc. `-O2` by default.  
   + `WARNING_LEVEL`: Specify the warning level. The default value is `-Wall -Wpedantic -Wextra`
   + `PREDEFINED_MACRO`: Specify predefined macros, such as `-DUNICODE`. Empty by default.  
+  + `ADDITIONAL_OPTIONS`: Additional compiler options. Empty by default.  
 
   Example:   
 

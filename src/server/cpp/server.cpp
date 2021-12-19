@@ -31,6 +31,7 @@ server::server(create_database_t create_database) : m_database_ptr(create_databa
     ::std::string port;
     ::std::getline(cin, port);
 
+    ::std::cout << "Connecting..." << ::std::endl;
     this->m_communicator.listen(port);
 }
 
