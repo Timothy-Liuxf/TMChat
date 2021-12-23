@@ -6,7 +6,7 @@
 #define TMSOCKET_DETAILS_SOCKET_IMPL_IPP__
 
 PREP_NODISCARD static tmsocket_t
-connect_impl(const ::std::string& host, const ::std::string& port, socket_stream* stm, int (SYSCALL *connect_func)(tmsocket_t, const sockaddr*, socklen_t))
+connect_impl(const ::std::string& host, const ::std::string& port, socket_stream* stm, int (PREP_SYSCALL *connect_func)(tmsocket_t, const sockaddr*, socklen_t))
 {
     if (stm->is_finished())
     {

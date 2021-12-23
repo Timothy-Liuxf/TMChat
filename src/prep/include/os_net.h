@@ -4,7 +4,7 @@
 #include <prep/include/os.h>
 #include <prep/include/os_net_defs.h>
 
-#if defined(_WIN32)
+#if defined(PREP_WINDOWS)
 
 #   include <WinSock2.h>
 #   include <ws2tcpip.h>
@@ -15,7 +15,7 @@
 #   define socket_shutdown(return_by_recv)	((return_by_recv) == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
 #   define receive_error(return_by_recv)	((return_by_recv) == SOCKET_ERROR && WSAGetLastError() != WSAECONNRESET)
 
-#elif defined(__linux__) || defined(__unix__)
+#elif defined(PREP_LINUX) || defined(PREP_UNIX)
 
 #   include <sys/socket.h>
 #   include <netdb.h>
