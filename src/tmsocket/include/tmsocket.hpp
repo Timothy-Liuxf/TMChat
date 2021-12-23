@@ -9,12 +9,12 @@ TMSOCKET_NAMESPACE_BEGIN
 class tmsocket
 {
 public:
-	static void initialize_network();
-	static void end_network();
-	static bool network_initialized();
+    static void initialize_network();
+    static void end_network();
+    static bool network_initialized();
 
 private:
-	static bool initialized;
+    static bool initialized;
 };
 
 TMSOCKET_NAMESPACE_END
