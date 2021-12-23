@@ -50,10 +50,10 @@ Then the target `server.exe` and `client.exe` will be built.
 
 You can also use MSBuild to build the targets. If so, you should have MSBuild in your path. You can add it to your path manually or use "Developer command Prompt for Visual Studio". 
 
-You can run `Build.cmd` to build and run `Clean.cmd` to clean, or run the following command:  
+You can run `Build.cmd` to build and run `Clean.cmd` to clean, or run the following command in cmd:  
 
 ```cmd
-> MSBuild src\TMChat.sln [options]
+> MSBuild "src\TMChat.sln" [options]
 ```
 
  The options can be:  
@@ -70,7 +70,7 @@ You can run `Build.cmd` to build and run `Clean.cmd` to clean, or run the follow
 Example: 
 
 ```cmd
-> MSBuild src\TMChat.sln -t:Build -p:Configuration=Release;Platform=x64 -m:8
+> MSBuild "src\TMChat.sln" "-t:Build" "-p:Configuration=Release;Platform=x64" "-m:8"
 ```
 
 Then the target `server.exe` and `client.exe` will be built in the directory below:  

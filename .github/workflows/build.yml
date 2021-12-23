@@ -29,6 +29,9 @@ jobs:
                 make clean CPP_STANDARD=-std=c++17 COMPILER=clang++
     build-on-windows:
         runs-on: windows-latest
+        defaults:
+            run:
+                shell: cmd
         steps:
         -   uses: actions/checkout@v2
         -   name: setup msbuild
@@ -36,6 +39,6 @@ jobs:
             with:
                 msbuild-architecture: x64
         -   name: build
-            run: MSBuild src\TMChat.sln -t:Build -p:Configuration=Release;Platform=x64
+            run: MSBuild "src\TMChat.sln" "-t:Build" "-p:Configuration=Release;Platform=x64"
         -   name: clean
-            run: MSBuild src\TMChat.sln -t:Clean -p:Configuration=Release;Platform=x64
+            run: MSBuild "src\TMChat.sln" "-t:Clean" "-p:Configuration=Release;Platform=x64"
