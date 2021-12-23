@@ -1,0 +1,37 @@
+name: build
+
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+        branches: [ master ]
+
+jobs:
+    build-on-linux:
+        runs-on: ubuntu-lastest
+        steps:
+        -   uses: actions/checkout@v2
+        -   name: build with GCC in c++11
+            run: |
+                make CPP_STANDARD=-std=c++11 COMPILER=g++
+                make clean CPP_STANDARD=-std=c++11 COMPILER=g++
+        -   name: build with GCC in c++17
+            run: |
+                make CPP_STANDARD=-std=c++17 COMPILER=g++
+                make clean CPP_STANDARD=-std=c++17 COMPILER=g++
+        -   name: build with Clang in c++11
+            run: |
+                make CPP_STANDARD=-std=c++11 COMPILER=g++
+                make clean CPP_STANDARD=-std=c++11 COMPILER=clang++
+        -   name: build with Clang in c++17
+            run: |
+                make CPP_STANDARD=-std=c++17 COMPILER=g++
+                make clean CPP_STANDARD=-std=c++17 COMPILER=clang++
+    build-on-windows:
+        runs-on: windows-latest
+        steps:
+        -   uses: actions/checkout@v2
+        -   name: build
+            run: MSBuild src\TMChat.sln -t:Build -p:Configuration=Release;Platform=x64
+        -   name: clean
+            run: MSBuild src\TMChat.sln -t:Clean -p:Configuration=Release;Platform=x64
