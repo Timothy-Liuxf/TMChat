@@ -33,16 +33,52 @@ The `options` can be:
   Example:   
 
   ```sh
-  make CPP_STANDARD=-std=c++17 COMPILER=clang++
+  $ make CPP_STANDARD=-std=c++17 COMPILER=clang++
   ```
 
 Then the target `build/bin/server.out` and`build/bin/client.out` will be built. 
 
 ### Windows
 
+#### Use Visual Studio  
+
 Open `src\TMChat.sln` with Visual Studio 2019 or later versions, choose a target platfrom (Release | x64 recommended) and then build the solution. 
 
-You can also use MSBuild 16 or later versions to build `server\server.vcxproj` and `client\client.vcxproj` directly. 
+Then the target `server.exe` and `client.exe` will be built. 
 
-Then the target `server.exe` and `client.exe` will be built.
+#### Use MSBuild  
+
+You can also use MSBuild to build the targets. If so, you should have MSBuild in your path. You can add it to your path manually or use "Developer command Prompt for Visual Studio". 
+
+You can run `Build.cmd` to build and run `Clean.cmd` to clean, or run the following command:  
+
+```cmd
+> MSBuild src\TMChat.sln [options]
+```
+
+ The options can be:  
+
++ `-t:<value>`: Specify the task. The `value` can be: 
+  + `Build`: Incremental compile. This is the recommended value.  
+  + `Recompile`: Recompile. This will delete all files built in the last compilation and rebuild the targets. 
+  + `Clean`: Delete all files in the last compilation. 
++ `-p:<property>=<value>;<property>=<value>;...`. The `property` can be: 
+  + `Configuration`: The value can be `Debug` or `Release`  
+  + `Target`: The value can be `x86` or `x64`  
++ `-m:<value>`: The `value` specifies  the maximum number of concurrent processes to use when building. The default value is `1`  
+
+Example: 
+
+```cmd
+> MSBuild src\TMChat.sln -t:Build -p:Configuration=Release;Platform=x64 -m:8
+```
+
+Then the target `server.exe` and `client.exe` will be built in the directory below:  
+
+|      |      Debug      |     Release     |
+| :--: | :-------------: | :-------------: |
+| x86  |   `src\Debug`   |  `src\Release`  |
+| x64  | `src\x64\Debug` | `src\x64\Debug` |
+
+
 
