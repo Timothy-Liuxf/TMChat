@@ -75,10 +75,10 @@ Example:
 
 Then the target `server.exe` and `client.exe` will be built in the directory below:  
 
-|      |      Debug      |     Release     |
-| :--: | :-------------: | :-------------: |
-| x86  |   `src\Debug`   |  `src\Release`  |
-| x64  | `src\x64\Debug` | `src\x64\Debug` |
+|      |      Debug      |      Release      |
+| :--: | :-------------: | :---------------: |
+| x86  |   `src\Debug`   |   `src\Release`   |
+| x64  | `src\x64\Debug` | `src\x64\Release` |
 
 
 
