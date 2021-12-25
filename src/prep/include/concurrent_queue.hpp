@@ -43,7 +43,7 @@ public:
     size() const
     {
         lock_type lock(this->m_mtx);
-        return m_q.size();
+        return this->m_q.size();
     }
 
     PREP_NODISCARD
@@ -60,6 +60,18 @@ public:
         lock_type lock(this->m_mtx);
         this->m_q.emplace(::std::forward<Ts>(args)...);
         this->m_cond.notify_one();
+    }
+
+    void
+    push(const value_type& e)
+    {
+        this->emplace(e);
+    }
+
+    void
+    push(value_type&& e)
+    {
+        this->emplace(::std::move(e));
     }
 
     PREP_NODISCARD
@@ -79,7 +91,7 @@ public:
     {
         lock_type lock(this->m_mtx);
         this->m_cond.wait(lock, [this] { return this->m_q.size() > 0; });
-        value_type out = ::std::move(m_q.front());
+        value_type out = ::std::move(this->m_q.front());
         m_q.pop();
         return out;
     }

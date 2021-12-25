@@ -69,6 +69,30 @@ public:
         this->m_list.emplace_front(::std::forward<Ts>(args)...);
     }
 
+    void
+    push_back(const value_type& e)
+    {
+        this->emplace_back(e);
+    }
+
+    void
+    push_back(value_type&& e)
+    {
+        this->emplace_back(::std::move(e));
+    }
+
+    void
+    push_front(const value_type& e)
+    {
+        this->emplace_front(e);
+    }
+
+    void
+    push_front(value_type&& e)
+    {
+        this->emplace_front(::std::move(e));
+    }
+
     template <typename Ret, typename ElemConv>
     void
     visit(::std::function<Ret(ElemConv)> func)
