@@ -20,7 +20,7 @@ namespace tmchat
 
 #   include <stdint.h>
 
-typedef uint64_t default_id_type;
+typedef uint32_t default_id_type;
 
 #endif
 
