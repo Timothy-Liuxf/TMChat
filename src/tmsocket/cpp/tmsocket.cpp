@@ -9,7 +9,8 @@ TMSOCKET_NAMESPACE_BEGIN
 static ::std::mutex initialize_network_mtx;
 
 void
-tmsocket::initialize_network()
+tmsocket::
+initialize_network()
 {
     ::std::unique_lock<::std::mutex> lock(initialize_network_mtx);
 
@@ -31,7 +32,8 @@ tmsocket::initialize_network()
 }
 
 void
-tmsocket::end_network()
+tmsocket::
+end_network()
 {
     ::std::unique_lock<::std::mutex> lock(initialize_network_mtx);
 
@@ -44,30 +46,35 @@ tmsocket::end_network()
 }
 
 bool
-tmsocket::initialized = false;
+tmsocket::
+initialized = false;
 
 #else
 
 void
-tmsocket::initialize_network()
+tmsocket::
+initialize_network()
 {
     /* Do nothing. */
 }
 
 void
-tmsocket::end_network()
+tmsocket::
+end_network()
 {
     /* Do nothing. */
 }
 
 bool
-tmsocket::initialized = true;
+tmsocket::
+initialized = true;
 
 #endif // defined(PREP_WINDOWS)
 
 
 bool
-tmsocket::network_initialized()
+tmsocket::
+network_initialized()
 {
     return tmsocket::initialized;
 }

@@ -23,7 +23,8 @@ TMSOCKET_NAMESPACE_BEGIN
 
 #include "details/socket_impl.ipp"
 
-server_stream::~server_stream() noexcept
+server_stream::
+~server_stream() noexcept
 {
     try
     {
@@ -38,7 +39,8 @@ server_stream::~server_stream() noexcept
 
 
 void
-server_stream::pick_msg()
+server_stream::
+pick_msg()
 {
     try
     {
@@ -84,7 +86,8 @@ server_stream::pick_msg()
 }
 
 void
-server_stream::wait_for_finish_pick() const
+server_stream::
+wait_for_finish_pick() const
 {
     ::std::unique_lock<::std::mutex> lock(this->m_finish_pick_mtx);
     this->m_finish_pick_cond.wait(lock, [this] { return this->m_finish_pick; });
@@ -92,7 +95,8 @@ server_stream::wait_for_finish_pick() const
 
 
 void
-server_stream::end_communication()
+server_stream::
+end_communication()
 {
     bool org_val = m_is_finished.exchange(true);
     if (!org_val)
@@ -127,7 +131,8 @@ server_stream::end_communication()
 }
 
 void
-server_stream::receive_from_client(tmsocket_t client_fd, ::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
+server_stream::
+receive_from_client(tmsocket_t client_fd, ::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
 {
     try
     {
@@ -212,7 +217,8 @@ server_stream::receive_from_client(tmsocket_t client_fd, ::std::weak_ptr<::prep:
 }
 
 void
-server_stream::accept_clients(::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
+server_stream::
+accept_clients(::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
 {
     try
     {
@@ -296,7 +302,8 @@ server_stream::accept_clients(::std::weak_ptr<::prep::concurrent::semaphore> sem
 }
 
 void
-server_stream::listen(const ::std::string& host, const ::std::string& port)
+server_stream::
+listen(const ::std::string& host, const ::std::string& port)
 {
     {
         ::std::unique_lock<::std::mutex> lock(this->m_connect_mtx);
@@ -330,7 +337,8 @@ server_stream::listen(const ::std::string& host, const ::std::string& port)
 }
 
 void
-server_stream::send_to_one_client(tmsocket_t client_fd, const ::std::string& msg)
+server_stream::
+send_to_one_client(tmsocket_t client_fd, const ::std::string& msg)
 {
     if (!this->is_connected())
     {
@@ -352,7 +360,8 @@ server_stream::send_to_one_client(tmsocket_t client_fd, const ::std::string& msg
 }
 
 void
-server_stream::send_to_all_clients(const ::std::string& msg)
+server_stream::
+send_to_all_clients(const ::std::string& msg)
 {
     ::std::unique_lock<::std::mutex> lock(this->m_client_fds_lock);
     for (auto client_fd : this->m_client_fds)

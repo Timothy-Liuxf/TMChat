@@ -7,7 +7,8 @@
 
 TMSOCKET_NAMESPACE_BEGIN
 
-netexcept::netexcept(const char* msg, ::prep::errno_type no)
+netexcept::
+netexcept(const char* msg, ::prep::errno_type no)
     : m_no(no), m_str((char*)nullptr, &::free)
 {
     ::std::string generate_result = ::std::string(msg) + " Error code: " + ::std::to_string(no);
@@ -19,7 +20,8 @@ netexcept::netexcept(const char* msg, ::prep::errno_type no)
 
 PREP_NODISCARD
 const char*
-netexcept::what() const noexcept
+netexcept::
+what() const noexcept
 {
     return m_str.get();
 }

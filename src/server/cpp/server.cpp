@@ -12,7 +12,8 @@ using ::std::endl;
 
 TMCHAT_NAMESPACE_BEGIN
 
-server::server(create_database_t create_database) : m_database_ptr(create_database())
+server::
+server(create_database_t create_database) : m_database_ptr(create_database())
 {
     this->m_communicator.on_listen
     (
@@ -37,13 +38,15 @@ server::server(create_database_t create_database) : m_database_ptr(create_databa
 
 PREP_NODISCARD
 bool
-server::correct_passwd(const ::std::string& passwd, const data_type& data)
+server::
+correct_passwd(const ::std::string& passwd, const data_type& data)
 {
     return passwd == data.passwd;
 }
 
 void
-server::on_disconnect(tmsocket_t fd)
+server::
+on_disconnect(tmsocket_t fd)
 {
     {
         ::std::unique_lock<::std::mutex> lock(this->m_fd_to_id_mtx);
@@ -53,7 +56,8 @@ server::on_disconnect(tmsocket_t fd)
 }
 
 void
-server::on_receive(tmsocket_t fd, const ::std::string& msg)
+server::
+on_receive(tmsocket_t fd, const ::std::string& msg)
 {
     struct invalid_message : ::std::exception
     {

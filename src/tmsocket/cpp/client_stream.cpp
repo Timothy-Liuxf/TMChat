@@ -23,7 +23,8 @@ TMSOCKET_NAMESPACE_BEGIN
 
 #include "details/socket_impl.ipp"
 
-client_stream::~client_stream() noexcept
+client_stream::
+~client_stream() noexcept
 {
     try
     {
@@ -38,7 +39,8 @@ client_stream::~client_stream() noexcept
 
 
 void
-client_stream::pick_msg()
+client_stream::
+pick_msg()
 {
     try
     {
@@ -84,7 +86,8 @@ client_stream::pick_msg()
 }
 
 void
-client_stream::wait_for_finish_pick() const
+client_stream::
+wait_for_finish_pick() const
 {
     ::std::unique_lock<::std::mutex> lock(this->m_finish_pick_mtx);
     this->m_finish_pick_cond.wait(lock, [this] { return this->m_finish_pick; });
@@ -92,7 +95,8 @@ client_stream::wait_for_finish_pick() const
 
 
 void
-client_stream::receive_from_server(::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
+client_stream::
+receive_from_server(::std::weak_ptr<::prep::concurrent::semaphore> sem_ptr) noexcept
 {
     try
     {
@@ -170,7 +174,8 @@ client_stream::receive_from_server(::std::weak_ptr<::prep::concurrent::semaphore
 }
 
 void
-client_stream::connect(const ::std::string& host, const ::std::string& port)
+client_stream::
+connect(const ::std::string& host, const ::std::string& port)
 {
     {
         ::std::unique_lock<::std::mutex> lock(this->m_connect_mtx);
@@ -187,13 +192,15 @@ client_stream::connect(const ::std::string& host, const ::std::string& port)
 }
 
 void
-client_stream::send_to_server(const ::std::string& msg)
+client_stream::
+send_to_server(const ::std::string& msg)
 {
     send_msg(this->m_fd, msg, this);
 }
 
 void
-client_stream::end_communication()
+client_stream::
+end_communication()
 {
     bool org_val = this->m_is_finished.exchange(true);
     if (!org_val)
