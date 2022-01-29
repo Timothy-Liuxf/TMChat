@@ -1,8 +1,8 @@
 # TMChat
 
-**Chat with TMChat now!**
+**Start chatting with TMChat now!**
 
-TMChat, a small chat tool. 
+TMChat, a small chat tool with a self-written TCP/IPv4 communication library, tmsocket. 
 
 ## Supported Compiler
 
@@ -12,6 +12,12 @@ TMChat, a small chat tool.
 |    Clang 12     |   Linux x86-64   | `-m64` | Perfectly supported | Perfectly supported | Perfectly supported |
 |    MSVC 19.2    | Windows (64-bit) |  x64   |    Not supported    |      Supported      |      Supported      |
 |    MSVC 19.2    | Windows (64-bit) |  x86   |    Not supported    |  Compiler warnings  |  Compiler warnings  |
+
+## Structure
+
++ tmsocket: A communication library using TCP/IPv4 which provides message pack oriented communication.  
++ server: The server of TMChat.  
++ client: The client of TMChat.  
 
 ## How to build
 
