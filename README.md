@@ -2,7 +2,7 @@
 
 **Start chatting with TMChat now!**
 
-TMChat, a small chat tool with a self-written TCP/IPv4 communication library, tmsocket. 
+TMChat, a small chat tool with a self-written TCP/IPv4 communication library, TMSocket. 
 
 ## Supported Compiler
 
