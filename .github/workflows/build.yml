@@ -16,21 +16,29 @@ jobs:
                 autoreconf -i
                 CXX="g++ -std=c++11" ./configure
                 make
+                make clean
+                find . -iname .deps | rm -rf
         -   name: build with GCC in c++17
             run: |
                 autoreconf -i
                 CXX="g++ -std=c++17" ./configure
                 make
+                make clean
+                find . -iname .deps | rm -rf
         -   name: build with Clang in c++11
             run: |
                 autoreconf -i
                 CXX="clang++ -std=c++11" ./configure
                 make
+                make clean
+                find . -iname .deps | rm -rf
         -   name: build with Clang in c++17
             run: |
                 autoreconf -i
                 CXX="clang++ -std=c++17" ./configure
                 make
+                make clean
+                find . -iname .deps | rm -rf
     build-on-windows:
         runs-on: windows-latest
         defaults:
