@@ -14,22 +14,22 @@ jobs:
         -   name: build with GCC in c++11
             run: |
                 autoreconf -i
-                CC="g++ -std=c++11" ./configure
+                CXX="g++ -std=c++11" ./configure
                 make
         -   name: build with GCC in c++17
             run: |
                 autoreconf -i
-                CC="g++ -std=c++17" ./configure
+                CXX="g++ -std=c++17" ./configure
                 make
         -   name: build with Clang in c++11
             run: |
                 autoreconf -i
-                CC="clang++ -std=c++11" ./configure
+                CXX="clang++ -std=c++11" ./configure
                 make
         -   name: build with Clang in c++17
             run: |
                 autoreconf -i
-                CC="clang++ -std=c++17" ./configure
+                CXX="clang++ -std=c++17" ./configure
                 make
     build-on-windows:
         runs-on: windows-latest
