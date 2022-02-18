@@ -24,25 +24,34 @@ TMChat, a small chat tool with a self-written TCP/IPv4 communication library, TM
 ### Linux
 
 ```sh
-$ make [options]
+# Requires autotools
+
+$ autoreconf -i
+$ ./configure
+$ make
 ```
 
-The `options` can be:
+And the target `build/lib/libtmsocket.a`, `build/bin/tmchat_server` and `build/bin/tmchat_client` will be built. 
 
-  + `COMPILER`: Specify the compiler you want to build with. The value can be `g++` or `clang++`. `g++` by default.
-  + `CPP_STANDARD`: Specify the C++ language standard. The value can be `-std=c++11`, `-std=c++14`, `-std=c++17`, `-std=gnu++11`, `-std=gnu++14`, `-std=gnu++17`, etc. The default value is `-std=c++11`.
-  + `OPTIMIZATION`: Specify the level of optimization. The value can be `-O0`, `-O1`, `-Os`, etc. `-O2` by default.  
-  + `WARNING_LEVEL`: Specify the warning level. The default value is `-Wall -Wpedantic -Wextra`
-  + `PREDEFINED_MACRO`: Specify predefined macros, such as `-DUNICODE`. Empty by default.  
-  + `ADDITIONAL_OPTIONS`: Additional compiler options. Empty by default.  
+Then install it: 
 
-  Example:   
+```shell
+sudo make install
+```
 
-  ```sh
-  $ make CPP_STANDARD=-std=c++17 COMPILER=clang++
-  ```
+After installation, you can use the third party library `libtmsocket.a`: 
 
-Then the target `build/bin/server.out` and`build/bin/client.out` will be built. 
+```c++
+#include <tmsocket/include/server_communicator.hpp>
+#include <tmsocket/include/client_communicator.hpp>
+```
+
+and use the chat tool: 
+
+```shell
+$ tmchat_server
+$ tmchat_client
+```
 
 ### Windows
 
