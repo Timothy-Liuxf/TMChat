@@ -24,7 +24,7 @@ TMChat, a small chat tool with a self-written TCP/IPv4 communication library, TM
 ### Linux
 
 ```sh
-# Requires autotools
+# Requires GNU Autotools and GNU Make
 
 $ autoreconf -i
 $ ./configure
