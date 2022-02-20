@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31829.152
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prep", "prep", "{6F1FCB44-4ACD-403B-832F-FC3B2F4B78B4}"
+	ProjectSection(SolutionItems) = preProject
+		prep\Makefile.am.inc = prep\Makefile.am.inc
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{EB6A490E-F9CB-4420-BFBF-355D9127E0BD}"
 	ProjectSection(SolutionItems) = preProject
@@ -29,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "details", "details", "{8283
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{567DE947-A527-4039-B489-19F389D46549}"
 	ProjectSection(SolutionItems) = preProject
+		common\Makefile.am.inc = common\Makefile.am.inc
 		common\protocol.hpp = common\protocol.hpp
 		common\tmchat.h = common\tmchat.h
 	EndProjectSection
@@ -41,7 +45,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client\client.vcx
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{63524935-F9D0-4A03-BF3D-887A2C192F5D}"
 	ProjectSection(SolutionItems) = preProject
-		..\Makefile = ..\Makefile
+		..\config.h = ..\config.h
+		..\configure.ac = ..\configure.ac
+		..\Makefile.am = ..\Makefile.am
 	EndProjectSection
 EndProject
 Global

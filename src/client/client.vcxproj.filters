@@ -28,6 +28,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile" />
+    <None Include="Makefile.am.inc">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
