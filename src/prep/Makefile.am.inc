@@ -13,7 +13,7 @@ include_prep_HEADERS =                              \
     %reldir%/include/semaphore.hpp                  \
     ${NOTHING}
 
-include_prep_detailsdir = ${includedir}/prep/details/include
+include_prep_detailsdir = ${includedir}/prep/include/details
 include_prep_details_HEADERS =                                      \
     %reldir%/include/details/compiler_clang.i                       \
     %reldir%/include/details/compiler_gcc.i                         \
