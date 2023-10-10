@@ -19,7 +19,7 @@ server(create_database_t create_database) : m_database_ptr(create_database())
     (
         []
         {
-            cout << "Successfully connected!" << endl;
+            cout << "Successfully listening!" << endl;
         }
     );
     this->m_communicator.add_log([](const ::std::string& str) { cout << str << endl; });
@@ -32,10 +32,23 @@ server(create_database_t create_database) : m_database_ptr(create_database())
     ::std::string port;
     ::std::getline(cin, port);
 
-    ::std::cout << "Connecting..." << ::std::endl;
-    this->m_communicator.listen(port);
+    cout << "Allow LAN? (y/n): " << std::flush;
+    ::std::string allow_lan;
+    ::std::getline(cin, allow_lan);
+    if (allow_lan == "y" || allow_lan == "Y")
+    {
+        ::std::cout << "Listening..." << ::std::endl;
+        this->m_communicator.listen(port);
+    }
+    else if (allow_lan == "n" || allow_lan == "N")
+    {
+        ::std::cout << "Listening at 127.0.0.1..." << ::std::endl;
+        this->m_communicator.listen("127.0.0.1", port);
+    } else {
+        throw ::std::runtime_error("Invalid input!");
+    }
 }
-
+    
 PREP_NODISCARD
 bool
 server::

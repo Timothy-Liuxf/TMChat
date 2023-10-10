@@ -66,7 +66,7 @@ void
 server_communicator::
 listen(const ::std::string& port)
 {
-    this->m_stm.listen(port);
+    this->m_stm.listen("0.0.0.0", port);
 }
 
 void
