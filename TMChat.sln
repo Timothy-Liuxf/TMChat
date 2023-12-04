@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prep", "prep", "{6F1FCB44-4ACD-403B-832F-FC3B2F4B78B4}"
 	ProjectSection(SolutionItems) = preProject
-		src\prep\Makefile.am.inc = src\prep\Makefile.am.inc
+		src\prep\Makefile.inc = src\prep\Makefile.inc
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{EB6A490E-F9CB-4420-BFBF-355D9127E0BD}"
@@ -32,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "details", "details", "{8283
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{567DE947-A527-4039-B489-19F389D46549}"
 	ProjectSection(SolutionItems) = preProject
-		src\common\Makefile.am.inc = src\common\Makefile.am.inc
+		src\common\Makefile.inc = src\common\Makefile.inc
 		src\common\protocol.hpp = src\common\protocol.hpp
 		src\common\tmchat.h = src\common\tmchat.h
 	EndProjectSection

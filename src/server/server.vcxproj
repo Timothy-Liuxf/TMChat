@@ -181,7 +181,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile.am.inc" />
+    <None Include="Makefile.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
