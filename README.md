@@ -28,7 +28,7 @@ TMChat, a small chat tool with a self-written TCP/IPv4 communication library, TM
 
 $ autoreconf -i
 $ ./configure
-$ make
+$ make -j$(nproc)
 ```
 
 And the target `build/lib/libtmsocket.a`, `build/bin/tmchat_server` and `build/bin/tmchat_client` will be built. 
