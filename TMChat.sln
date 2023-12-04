@@ -1,53 +1,53 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31829.152
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prep", "prep", "{6F1FCB44-4ACD-403B-832F-FC3B2F4B78B4}"
 	ProjectSection(SolutionItems) = preProject
-		prep\Makefile.am.inc = prep\Makefile.am.inc
+		src\prep\Makefile.am.inc = src\prep\Makefile.am.inc
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{EB6A490E-F9CB-4420-BFBF-355D9127E0BD}"
 	ProjectSection(SolutionItems) = preProject
-		prep\include\compiler.h = prep\include\compiler.h
-		prep\include\concurrent_list.hpp = prep\include\concurrent_list.hpp
-		prep\include\concurrent_queue.hpp = prep\include\concurrent_queue.hpp
-		prep\include\cpp_std.h = prep\include\cpp_std.h
-		prep\include\event.hpp = prep\include\event.hpp
-		prep\include\namespace.hpp = prep\include\namespace.hpp
-		prep\include\os.h = prep\include\os.h
-		prep\include\os_net.h = prep\include\os_net.h
-		prep\include\os_net_defs.h = prep\include\os_net_defs.h
-		prep\include\prep.h = prep\include\prep.h
-		prep\include\semaphore.hpp = prep\include\semaphore.hpp
+		src\prep\include\compiler.h = src\prep\include\compiler.h
+		src\prep\include\concurrent_list.hpp = src\prep\include\concurrent_list.hpp
+		src\prep\include\concurrent_queue.hpp = src\prep\include\concurrent_queue.hpp
+		src\prep\include\cpp_std.h = src\prep\include\cpp_std.h
+		src\prep\include\event.hpp = src\prep\include\event.hpp
+		src\prep\include\namespace.hpp = src\prep\include\namespace.hpp
+		src\prep\include\os.h = src\prep\include\os.h
+		src\prep\include\os_net.h = src\prep\include\os_net.h
+		src\prep\include\os_net_defs.h = src\prep\include\os_net_defs.h
+		src\prep\include\prep.h = src\prep\include\prep.h
+		src\prep\include\semaphore.hpp = src\prep\include\semaphore.hpp
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "details", "details", "{828387CB-ACF8-4AB7-BC07-27645DB6FCF5}"
 	ProjectSection(SolutionItems) = preProject
-		prep\include\details\compiler_clang.i = prep\include\details\compiler_clang.i
-		prep\include\details\compiler_gcc.i = prep\include\details\compiler_gcc.i
-		prep\include\details\compiler_msvc.i = prep\include\details\compiler_msvc.i
+		src\prep\include\details\compiler_clang.i = src\prep\include\details\compiler_clang.i
+		src\prep\include\details\compiler_gcc.i = src\prep\include\details\compiler_gcc.i
+		src\prep\include\details\compiler_msvc.i = src\prep\include\details\compiler_msvc.i
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{567DE947-A527-4039-B489-19F389D46549}"
 	ProjectSection(SolutionItems) = preProject
-		common\Makefile.am.inc = common\Makefile.am.inc
-		common\protocol.hpp = common\protocol.hpp
-		common\tmchat.h = common\tmchat.h
+		src\common\Makefile.am.inc = src\common\Makefile.am.inc
+		src\common\protocol.hpp = src\common\protocol.hpp
+		src\common\tmchat.h = src\common\tmchat.h
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tmsocket", "tmsocket\tmsocket.vcxproj", "{E76BFA8E-CEE5-45E6-AAC2-6647C9F04FA1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tmsocket", "src\tmsocket\tmsocket.vcxproj", "{E76BFA8E-CEE5-45E6-AAC2-6647C9F04FA1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server", "server\server.vcxproj", "{C08F364E-89D7-40CF-BBE4-F734E38CF22E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server", "src\server\server.vcxproj", "{C08F364E-89D7-40CF-BBE4-F734E38CF22E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client\client.vcxproj", "{04B46548-C25F-44C8-B5AA-E88DB0DA132C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "src\client\client.vcxproj", "{04B46548-C25F-44C8-B5AA-E88DB0DA132C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{63524935-F9D0-4A03-BF3D-887A2C192F5D}"
 	ProjectSection(SolutionItems) = preProject
-		..\config.h = ..\config.h
-		..\configure.ac = ..\configure.ac
-		..\Makefile.am = ..\Makefile.am
+		config.h = config.h
+		configure.ac = configure.ac
+		Makefile.am = Makefile.am
 	EndProjectSection
 EndProject
 Global

@@ -57,7 +57,7 @@ $ tmchat_client
 
 #### Use Visual Studio  
 
-Open `src\TMChat.sln` with Visual Studio 2019 or later versions, choose a target platfrom (Release | x64 recommended) and then build the solution. 
+Open `TMChat.sln` with Visual Studio 2022 or later versions, choose a target platfrom (Release | x64 recommended) and then build the solution. 
 
 Then the target `server.exe` and `client.exe` will be built. 
 
@@ -68,7 +68,7 @@ You can also use MSBuild to build the targets. If so, you should have MSBuild in
 You can run `Build.cmd` to build and run `Clean.cmd` to clean, or run the following command in cmd:  
 
 ```cmd
-> MSBuild "src\TMChat.sln" [options]
+> MSBuild ".\TMChat.sln" [options]
 ```
 
  The options can be:  
@@ -85,7 +85,7 @@ You can run `Build.cmd` to build and run `Clean.cmd` to clean, or run the follow
 Example: 
 
 ```cmd
-> MSBuild "src\TMChat.sln" "-t:Build" "-p:Configuration=Release;Platform=x64" "-m:8"
+> MSBuild ".\TMChat.sln" "-t:Build" "-p:Configuration=Release;Platform=x64" "-m:8"
 ```
 
 Then the target `server.exe` and `client.exe` will be built in the directory below:  
