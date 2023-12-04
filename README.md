@@ -6,12 +6,12 @@ TMChat, a small chat tool with a self-written TCP/IPv4 communication library, TM
 
 ## Supported Compiler
 
-|    Compiler     |     Platform     | Target |        C++11        |        C++14        |        C++17        |
-| :-------------: | :--------------: | :----: | :-----------------: | :-----------------: | :-----------------: |
-| GCC 7 \~ GCC 11 |   Linux x86-64   | `-m64` | Perfectly supported | Perfectly supported | Perfectly supported |
-|    Clang 12     |   Linux x86-64   | `-m64` | Perfectly supported | Perfectly supported | Perfectly supported |
-|    MSVC 19.2    | Windows (64-bit) |  x64   |    Not supported    |      Supported      |      Supported      |
-|    MSVC 19.2    | Windows (64-bit) |  x86   |    Not supported    |  Compiler warnings  |  Compiler warnings  |
+|    Compiler     |     Platform     | Target |        C++11        |   C++14 \~ C++20    |
+| :-------------: | :--------------: | :----: | :-----------------: | :-----------------: |
+| GCC 7 \~ GCC 11 |   Linux x86-64   | `-m64` | Perfectly supported | Perfectly supported |
+|    Clang 12     |   Linux x86-64   | `-m64` | Perfectly supported | Perfectly supported |
+|   MSVC 19.37    | Windows (64-bit) |  x64   |    Not supported    |      Supported      |
+|   MSVC 19.37    | Windows (64-bit) |  x86   |    Not supported    |  Compiler warnings  |
 
 ## Structure
 
