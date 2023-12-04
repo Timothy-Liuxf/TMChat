@@ -39,14 +39,24 @@ public:
         auto postfix_pos = buffer.find(tmsocket_postfix, prefix_pos + tmsocket_prefix.size());
         while (postfix_pos != ::std::string::npos)
         {
-            if (buffer.substr(postfix_pos + tmsocket_postfix.size(), tmsocket_postfix.size()) == tmsocket_postfix)
+            auto repeated_postfix_beg
+                = buffer.cbegin() + postfix_pos + tmsocket_postfix.size();
+            if (static_cast<std::size_t>(buffer.cend() - repeated_postfix_beg) >= tmsocket_postfix.size()
+                && std::equal(repeated_postfix_beg,
+                              repeated_postfix_beg + tmsocket_postfix.size(),
+                              tmsocket_postfix.cbegin()))
             {
-                buffer.erase(postfix_pos + tmsocket_postfix.size(), tmsocket_postfix.size());
+                buffer.erase(repeated_postfix_beg, repeated_postfix_beg + tmsocket_postfix.size());
             }
-            else if (buffer.substr(postfix_pos + tmsocket_postfix.size(), tmsocket_endmsg.size()) == tmsocket_endmsg)
+            else if (static_cast<std::size_t>(buffer.cend() - repeated_postfix_beg) >= tmsocket_endmsg.size()
+                     && std::equal(repeated_postfix_beg,
+                                   repeated_postfix_beg + tmsocket_endmsg.size(),
+                                   tmsocket_endmsg.cbegin()))
             {
-                msg = buffer.substr(prefix_pos + tmsocket_prefix.size(), postfix_pos - (prefix_pos + tmsocket_prefix.size()));
-                buffer = buffer.substr(postfix_pos + tmsocket_postfix.size() + tmsocket_endmsg.size());
+                msg.assign(buffer.cbegin() + prefix_pos + tmsocket_prefix.size(),
+                           buffer.cbegin() + postfix_pos);
+                buffer.assign(repeated_postfix_beg + tmsocket_endmsg.size(),
+                              buffer.cend());
                 return true;
             }
             postfix_pos = buffer.find(tmsocket_postfix, postfix_pos + tmsocket_postfix.size());

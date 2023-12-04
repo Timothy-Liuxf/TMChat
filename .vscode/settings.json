@@ -60,6 +60,9 @@
         "ranges": "cpp",
         "list": "cpp",
         "map": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "cstdarg": "cpp",
+        "numeric": "cpp",
+        "cinttypes": "cpp"
     }
 }
