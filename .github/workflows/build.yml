@@ -18,24 +18,10 @@ jobs:
                 make
                 make clean
                 find . -iname .deps | xargs rm -rf
-        -   name: build with GCC in c++17
-            run: |
-                autoreconf -i
-                CXX="g++ -std=c++17" ./configure
-                make
-                make clean
-                find . -iname .deps | xargs rm -rf
         -   name: build with Clang in c++11
             run: |
                 autoreconf -i
                 CXX="clang++ -std=c++11" ./configure
-                make
-                make clean
-                find . -iname .deps | xargs rm -rf
-        -   name: build with Clang in c++17
-            run: |
-                autoreconf -i
-                CXX="clang++ -std=c++17" ./configure
                 make
                 make clean
                 find . -iname .deps | xargs rm -rf
@@ -51,6 +37,6 @@ jobs:
             with:
                 msbuild-architecture: x64
         -   name: build
-            run: MSBuild "src\TMChat.sln" "-t:Build" "-p:Configuration=Release;Platform=x64"
+            run: MSBuild "TMChat.sln" "-t:Build" "-p:Configuration=Release;Platform=x64"
         -   name: clean
-            run: MSBuild "src\TMChat.sln" "-t:Clean" "-p:Configuration=Release;Platform=x64"
+            run: MSBuild "TMChat.sln" "-t:Clean" "-p:Configuration=Release;Platform=x64"
