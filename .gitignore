@@ -481,3 +481,6 @@ Makefile
 
 # dist files
 *.tar.gz
+
+# log files
+log.txt

@@ -28,6 +28,15 @@ typedef int tmsocket_t;
 
 
 
+#elif defined(PREP_APPLE)
+
+
+// define the type of socket
+
+typedef int tmsocket_t;
+
+
+
 #endif // #if defined(PREP_WINDOWS)
 
 

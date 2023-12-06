@@ -26,6 +26,17 @@
 #   define socket_shutdown(return_by_recv)  ((return_by_recv) == 0)
 #   define receive_error(return_by_recv)    ((return_by_recv) < 0)
 
+#elif defined(PREP_APPLE)
+
+#   include <sys/socket.h>
+#   include <netdb.h>
+
+#   define get_net_error() (errno)
+#   define close_socket(fd) close(fd)
+#   define invalid_socket(fd) ((fd) < 0)
+#   define socket_shutdown(return_by_recv)  ((return_by_recv) == 0)
+#   define receive_error(return_by_recv)    ((return_by_recv) < 0)
+
 #endif // #if defined(_WIN32)
 
 #endif // #ifndef PREP_OS_NET_H__

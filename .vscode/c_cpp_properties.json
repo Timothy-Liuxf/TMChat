@@ -15,6 +15,14 @@
             "cStandard": "${default}",
             "cppStandard": "${default}",
             "includePath": [".\\src"]
+        },
+        {
+            "name": "macOS ARM64",
+            "intelliSenseMode": "clang-arm64",
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c99",
+            "cppStandard": "c++11",
+            "includePath": ["./src"]
         }
     ],
     "version": 4

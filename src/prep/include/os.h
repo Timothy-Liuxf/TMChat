@@ -47,6 +47,20 @@ using errno_type = error_t;
 
 PREP_NAMESPACE_END
 
+#elif defined(__APPLE__) || defined(__MACH__)   // defined(_WIN32)
+
+#   define PREP_APPLE
+#   include <unistd.h>
+#   include <errno.h>
+
+#   define PREP_SYSCALL
+
+PREP_NAMESPACE_BEGIN
+
+using errno_type = int;
+
+PREP_NAMESPACE_END
+
 #else
 #   error This platform is not supported. Please use UNIX-like operating systems or Windows.
 
