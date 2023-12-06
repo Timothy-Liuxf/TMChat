@@ -10,19 +10,19 @@ jobs:
     build-on-linux:
         runs-on: ubuntu-latest
         steps:
-        -   uses: actions/checkout@v2
+        -   uses: actions/checkout@v4
         -   name: build with GCC in c++11
             run: |
                 autoreconf -i
                 CXX="g++ -std=c++11" ./configure
-                make
+                make -j$(nproc)
                 make clean
                 find . -iname .deps | xargs rm -rf
         -   name: build with Clang in c++11
             run: |
                 autoreconf -i
                 CXX="clang++ -std=c++11" ./configure
-                make
+                make -j$(nproc)
                 make clean
                 find . -iname .deps | xargs rm -rf
     build-on-windows:
@@ -31,7 +31,7 @@ jobs:
             run:
                 shell: cmd
         steps:
-        -   uses: actions/checkout@v2
+        -   uses: actions/checkout@v4
         -   name: setup msbuild
             uses: microsoft/setup-msbuild@v1.1
             with:
