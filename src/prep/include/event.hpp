@@ -28,7 +28,7 @@ public:
         ::std::unique_lock<::std::mutex> lock(this->m_mtx);
         for (auto&& manner : this->m_manners)
         {
-            manner(::std::forward<Args>(args)...);
+            manner(static_cast<Args>(args)...);
         }
     }
 
